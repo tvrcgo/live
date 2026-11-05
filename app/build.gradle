@@ -3,6 +3,12 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// 版本号规则：{major}.{YYMM}.{BUILD_ID}
+// release 用 gradle.properties 里的 app.majorVersion；debug 固定 0，保证正式版永远能覆盖调试版。
+// YYMM 取构建时的年月（固定东八区，避免 CI 与本地跨月不一致）；
+// BUILD_ID 由 CI 传入 -PbuildNumber=${{ github.run_number }}，本地回退到提交数。
+def appVersion = DetectVersion(0)
+
 android {
     namespace 'com.lizongying.mytv'
     compileSdk 34
@@ -12,32 +18,12 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.lizongying.mytv"
+        applicationId "com.tvrcgo.mytv"
         minSdk 21
         targetSdk 33
-        versionCode VersionCode()
-        versionName VersionName()
+        versionCode appVersion.code
+        versionName appVersion.name
 
-        // This block is different from the one you use to link Gradle
-        // to your CMake or ndk-build script.
-        externalNativeBuild {
-
-            // For ndk-build, instead use the ndkBuild block.
-            cmake {
-                arguments "-DIS_SO_BUILD=${project.hasProperty('IS_SO_BUILD') ? project.IS_SO_BUILD : true}"
-
-                abiFilters "armeabi-v7a", "arm64-v8a"
-            }
-        }
-
-        // Similar to other properties in the defaultConfig block,
-        // you can configure the ndk block for each product flavor
-        // in your build configuration.
-        ndk {
-            // Specifies the ABI configurations of your native
-            // libraries Gradle should build and package with your app.
-            abiFilters "armeabi-v7a", "arm64-v8a"
-        }
         multiDexEnabled true
     }
 
@@ -56,42 +42,59 @@ android {
     kotlinOptions {
         jvmTarget = 17
     }
+}
 
-    // Encapsulates your external native build configurations.
-    externalNativeBuild {
-
-        // Encapsulates your CMake build configurations.
-        cmake {
-
-            // Provides a relative path to your CMake build script.
-            path = file("CMakeLists.txt")
+// debug 用默认配置（major 0）；release 覆盖为 gradle.properties 里的主版本号
+android.applicationVariants.all { variant ->
+    if (variant.buildType.name != "debug") {
+        def version = DetectVersion(VersionMajor())
+        variant.outputs.each { output ->
+            output.versionCodeOverride = version.code
+            output.versionNameOverride = version.name
         }
     }
 }
 
-static def VersionCode() {
-    try {
-        def p = "git describe --tags --always"
-        def process = p.execute()
-        process.waitFor()
-        def replace = [v: "", ".": " ", "-": " "]
-        def arr = (process.text.trim().replace(replace) + " 0").split(" ")
-        def versionCode = arr[0].toInteger() * 16777216 + arr[1].toInteger() * 65536 + arr[2].toInteger() * 256 + arr[3].toInteger()
-        println("VersionCode $versionCode")
-        return versionCode
-    } catch (ignored) {
-        return 0
-    }
+def DetectVersion(major) {
+    def yymm = new Date().format("yyMM", TimeZone.getTimeZone("Asia/Shanghai"))
+    def buildId = BuildId()
+    def version = [
+            code: major * 10000000 + yymm.toInteger() * 10000 + buildId,
+            name: "${major}.${yymm}.${buildId}",
+    ]
+    println("Version ${version.code} ${version.name}")
+    return version
 }
 
-static def VersionName() {
-    try {
-        def process = "git describe --tags --always".execute()
-        process.waitFor()
-        return process.text.trim() - "v"
-    } catch (ignored) {
-        return "1.0.0"
+// 主版本号在 gradle.properties 中维护（app.majorVersion）
+def VersionMajor() {
+    def fromProperty = project.findProperty("app.majorVersion")
+    if (fromProperty != null && fromProperty.toString().isInteger()) {
+        return fromProperty.toString().toInteger()
     }
+    return 1
+}
+
+// 自增构建号：显式参数 > CI 的 github.run_number > 提交数
+def BuildId() {
+    def fromProperty = project.findProperty("buildNumber")
+    if (fromProperty != null && fromProperty.toString().isInteger()) {
+        return fromProperty.toString().toInteger()
+    }
+    def fromEnv = System.getenv("GITHUB_RUN_NUMBER")
+    if (fromEnv != null && fromEnv.isInteger()) {
+        return fromEnv.toInteger()
+    }
+    try {
+        def process = "git rev-list --count HEAD".execute()
+        process.waitFor()
+        def text = process.text.trim()
+        if (text.isInteger()) {
+            return text.toInteger()
+        }
+    } catch (ignored) {
+    }
+    return 1
 }
 
 dependencies {
@@ -105,13 +108,9 @@ dependencies {
     // For HLS playback support with ExoPlayer
     implementation "androidx.media3:media3-exoplayer-hls:$media3_version"
 
-    // 21:2.11.0 17:2.6.4
-    def retrofit2_version = "2.11.0"
-
-    implementation 'com.google.protobuf:protobuf-kotlin:3.25.1'
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit2_version"
-    implementation "com.squareup.retrofit2:converter-protobuf:$retrofit2_version"
-    implementation "com.squareup.retrofit2:retrofit:$retrofit2_version"
+    // 只用到 okhttp 与 gson（拉取 m3u、序列化源配置），不再依赖 retrofit
+    implementation "com.squareup.okhttp3:okhttp:3.14.9"
+    implementation "com.google.code.gson:gson:2.10.1"
 
     implementation 'androidx.leanback:leanback:1.2.0-alpha04'
     
@@ -120,10 +119,11 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.13.0'
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC")
 
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.13.3'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.13.3'
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.13.3'
+
+    testImplementation 'junit:junit:4.13.2'
 }
