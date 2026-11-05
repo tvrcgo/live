@@ -19,7 +19,7 @@
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:logo="@drawable/logo"
+        android:logo="@drawable/banner"
         android:networkSecurityConfig="@xml/network"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyTV"
