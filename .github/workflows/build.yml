@@ -68,10 +68,11 @@ jobs:
           ls -l dist
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: my-tv-${{ steps.version.outputs.name }}
           path: dist/my-tv-${{ steps.version.outputs.name }}.apk
+          overwrite: true
 
       - name: Create GitHub release
         env:

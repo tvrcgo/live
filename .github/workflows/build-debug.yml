@@ -41,7 +41,8 @@ jobs:
           ls -l dist
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: my-tv-${{ steps.version.outputs.name }}-debug
           path: dist/my-tv-${{ steps.version.outputs.name }}-debug.apk
+          overwrite: true
