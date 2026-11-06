@@ -7,6 +7,8 @@
     <string name="exit">退出</string>
 
     <string name="title_sources">直播源</string>
+    <string name="source_manage">管理</string>
+    <string name="title_exit_app">退出应用</string>
     <string name="source_tip">添加 m3u 地址，启用后在启动时合并成一个频道列表</string>
     <string name="source_add">添加源</string>
     <string name="source_refresh">刷新全部</string>

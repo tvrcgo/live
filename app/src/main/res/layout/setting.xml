@@ -4,67 +4,159 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     >
+
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="600dp"
+        android:layout_height="wrap_content"
+        android:background="#FF263238"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#FFEEEEEE"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="当前版本: $versionName\nhttps://github.com/tvrcgo/my-tv"
+            android:textColor="#B3EEEEEE"
+            android:textSize="13sp" />
+
         <LinearLayout
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="20dp"
-            android:paddingLeft="7dp"
-            android:paddingRight="7dp"
-            android:background="#FF263238"
-            >
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/app_name"
+                android:layout_weight="1"
+                android:text="@string/title_sources"
+                android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
-            <TextView
-                android:id="@+id/version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="当前版本: $versionName\nhttps://github.com/tvrcgo/my-tv"
-                />
-            <Button
-                android:id="@+id/exit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="@string/exit"
-                />
+
             <Button
                 android:id="@+id/source_entry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/title_sources" />
+                android:text="@string/source_manage" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_channel_reversal"
+                android:textColor="#FFEEEEEE"
+                android:textSize="16sp" />
+
             <Switch
                 android:id="@+id/switch_channel_reversal"
-                android:text="@string/title_channel_reversal"
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_channel_num"
+                android:textColor="#FFEEEEEE"
+                android:textSize="16sp" />
+
             <Switch
                 android:id="@+id/switch_channel_num"
-                android:text="@string/title_channel_num"
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_time"
+                android:textColor="#FFEEEEEE"
+                android:textSize="16sp" />
+
             <Switch
                 android:id="@+id/switch_time"
-                android:text="@string/title_time"
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_boot_startup"
+                android:textColor="#FFEEEEEE"
+                android:textSize="16sp" />
+
             <Switch
                 android:id="@+id/switch_boot_startup"
-                android:text="@string/title_boot_startup"
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_exit_app"
+                android:textColor="#FFEEEEEE"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/exit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/exit" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
