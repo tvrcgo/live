@@ -18,7 +18,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.tvrcgo.mytv"
+        applicationId "com.tvrcgo.livetv"
         minSdk 21
         targetSdk 33
         versionCode appVersion.code
