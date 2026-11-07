@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId "com.tvrcgo.livetv"
-        minSdk 21
+        minSdk 28
         targetSdk 33
         versionCode appVersion.code
         versionName appVersion.name
