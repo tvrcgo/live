@@ -57,7 +57,7 @@ jobs:
           APKSIGNER=$(ls -d "$SDK"/build-tools/*/apksigner | sort -V | tail -1)
           printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
           mkdir -p dist
-          OUT="dist/my-tv-${{ steps.version.outputs.name }}-debug.apk"
+          OUT="dist/live-${{ steps.version.outputs.name }}-debug.apk"
           "$APKSIGNER" sign \
             --ks "$RUNNER_TEMP/release.jks" \
             --ks-pass env:KS_PASS \
@@ -71,6 +71,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
-          name: my-tv-${{ steps.version.outputs.name }}-debug
-          path: dist/my-tv-${{ steps.version.outputs.name }}-debug.apk
+          name: live-${{ steps.version.outputs.name }}-debug
+          path: dist/live-${{ steps.version.outputs.name }}-debug.apk
           overwrite: true

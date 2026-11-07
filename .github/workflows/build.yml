@@ -56,7 +56,7 @@ jobs:
           printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
           UNSIGNED=$(ls app/build/outputs/apk/release/*.apk | head -1)
           mkdir -p dist
-          OUT="dist/my-tv-${{ steps.version.outputs.name }}.apk"
+          OUT="dist/live-${{ steps.version.outputs.name }}.apk"
           "$APKSIGNER" sign \
             --ks "$RUNNER_TEMP/release.jks" \
             --ks-pass env:KS_PASS \
@@ -70,8 +70,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
-          name: my-tv-${{ steps.version.outputs.name }}
-          path: dist/my-tv-${{ steps.version.outputs.name }}.apk
+          name: live-${{ steps.version.outputs.name }}
+          path: dist/live-${{ steps.version.outputs.name }}.apk
           overwrite: true
 
       - name: Create GitHub release
@@ -79,13 +79,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="v${{ steps.version.outputs.name }}"
-          ASSET="dist/my-tv-${{ steps.version.outputs.name }}.apk"
+          ASSET="dist/live-${{ steps.version.outputs.name }}.apk"
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "release $TAG 已存在，覆盖其中的 APK"
             gh release upload "$TAG" "$ASSET" --clobber
           else
             gh release create "$TAG" "$ASSET" \
-              --title "my-tv ${{ steps.version.outputs.name }}" \
+              --title "live ${{ steps.version.outputs.name }}" \
               --notes "自动构建 $(date -u '+%Y-%m-%d %H:%M:%S') UTC，提交 ${{ github.sha }}" \
               --target "${{ github.sha }}"
           fi
@@ -102,4 +102,4 @@ jobs:
           SHA=$(git rev-parse HEAD)
           curl -sS -X POST "https://gitee.com/api/v5/repos/${{ github.repository }}/releases?access_token=$GITEE_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"tag_name\":\"v${{ steps.version.outputs.name }}\",\"name\":\"my-tv ${{ steps.version.outputs.name }}\",\"prerelease\":false,\"target_commitish\":\"$SHA\"}"
+            -d "{\"tag_name\":\"v${{ steps.version.outputs.name }}\",\"name\":\"live ${{ steps.version.outputs.name }}\",\"prerelease\":false,\"target_commitish\":\"$SHA\"}"
