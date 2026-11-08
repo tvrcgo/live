@@ -21,6 +21,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Check signing secrets
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+        run: |
+          if [ -z "$KEYSTORE" ]; then
+            echo "::error::缺少签名 secrets：KEYSTORE / KEYSTORE_PASSWORD / ALIAS / ALIAS_PASSWORD"
+            exit 1
+          fi
+
       - name: Unit test
         run: ./gradlew testDebugUnitTest -PbuildNumber=${{ github.run_number }}
 
@@ -34,15 +43,34 @@ jobs:
           echo "name=$VERSION" >> "$GITHUB_OUTPUT"
           echo "versionName=$VERSION"
 
-      - name: Rename APK with version
+      # 用与正式包相同的 release keystore 重签，保证 debug 包签名一致：
+      # 历次 debug 包之间、debug 包与正式包之间均可直接覆盖安装，应用数据保留。
+      - name: Sign with release keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE }}
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.ALIAS_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS }}
         run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          APKSIGNER=$(ls -d "$SDK"/build-tools/*/apksigner | sort -V | tail -1)
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk "dist/my-tv-${{ steps.version.outputs.name }}-debug.apk"
+          OUT="dist/live-${{ steps.version.outputs.name }}-debug.apk"
+          "$APKSIGNER" sign \
+            --ks "$RUNNER_TEMP/release.jks" \
+            --ks-pass env:KS_PASS \
+            --ks-key-alias "$KEY_ALIAS" \
+            --key-pass env:KEY_PASS \
+            --out "$OUT" "app/build/outputs/apk/debug/app-debug.apk"
+          "$APKSIGNER" verify --print-certs "$OUT"
+          rm -f "$RUNNER_TEMP/release.jks"
           ls -l dist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
-          name: my-tv-${{ steps.version.outputs.name }}-debug
-          path: dist/my-tv-${{ steps.version.outputs.name }}-debug.apk
+          name: live-${{ steps.version.outputs.name }}-debug
+          path: dist/live-${{ steps.version.outputs.name }}-debug.apk
           overwrite: true

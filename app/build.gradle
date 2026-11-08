@@ -18,8 +18,8 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.tvrcgo.mytv"
-        minSdk 21
+        applicationId "com.chacha.live"
+        minSdk 28
         targetSdk 33
         versionCode appVersion.code
         versionName appVersion.name
