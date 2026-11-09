@@ -4,9 +4,9 @@
     <color name="black">#000</color>
     <color name="white">#FFF</color>
 
-    <color name="channel_scrim">#B3000000</color>
-    <color name="channel_group_panel">#B3000000</color>
-    <color name="channel_list_panel">#B3000000</color>
+    <color name="channel_scrim">#A6000000</color>
+    <color name="channel_group_panel">#A6000000</color>
+    <color name="channel_list_panel">#A6000000</color>
     <color name="channel_text">#F6F8F8</color>
     <color name="channel_text_dim">#708083</color>
     <color name="channel_group_name">#C4CCCE</color>
