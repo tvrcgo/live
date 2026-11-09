@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.FileProvider
-import com.google.gson.JsonParser
 import com.lizongying.mytv.appVersionName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,10 +19,15 @@ import java.util.concurrent.TimeUnit
 object UpdateManager {
 
     private const val LATEST_RELEASE_URL =
-        "https://api.github.com/repos/tvrcgo/live/releases/latest"
-    private const val API_USER_AGENT = "tvrcgo-live"
-    private const val APK_NAME_PREFIX = "live-"
-    private const val APK_NAME_SUFFIX = ".apk"
+        "https://github.com/tvrcgo/live/releases/latest"
+    private const val EXPANDED_ASSETS_URL =
+        "https://github.com/tvrcgo/live/releases/expanded_assets/"
+    private const val TAG_URL_PREFIX = "/releases/tag/"
+    private const val APK_URL_PREFIX = "/releases/download/"
+    // GitHub 对非浏览器 UA 返回无关页面，HTML 通道必须用浏览器式 UA
+    private const val HTTP_USER_AGENT =
+        "Mozilla/5.0 (Linux; Android 9) AppleWebKit/537.36"
+    private const val APK_NAME_PREFIX = "my-tv-"
     private const val APK_MIME_TYPE = "application/vnd.android.package-archive"
     private const val UPDATE_DIR_NAME = "updates"
     private const val CONNECT_TIMEOUT_SECONDS = 10L
@@ -58,7 +62,7 @@ object UpdateManager {
     private var downloadJob: Job? = null
 
     fun check(context: Context) {
-        // 已有结果或进行中时不重复请求，避免频繁触发 API 限流
+        // 已有结果或进行中时不重复请求
         when (state) {
             is State.Checking, is State.Available,
             is State.Downloading, is State.Downloaded -> return
@@ -95,7 +99,7 @@ object UpdateManager {
         // 下载生命周期独立于设置页，协程内只持有 applicationContext，避免泄漏 Activity
         val appContext = context.applicationContext
         downloadJob = scope.launch {
-            val apk = File(updateDir(appContext), "live-${remote.name}.apk")
+            val apk = File(updateDir(appContext), "my-tv-${remote.name}.apk")
             try {
                 downloadTo(remote.apkUrl, apk) { percent ->
                     setState(State.Downloading(percent))
@@ -121,29 +125,47 @@ object UpdateManager {
         context.startActivity(intent)
     }
 
+    // 走 HTML 页面通道：github.com/releases/latest 302 响应头带最新 tag，
+    // expanded_assets 页面含资产链接；api.github.com 匿名限流 60 次/IP/小时会持续失败
+    private val apkUrlPattern =
+        Regex("$APK_URL_PREFIX$APK_NAME_PREFIX[^\"'<]+\\.apk")
+
     private fun fetchLatest(): RemoteVersion? {
-        val response = client.newCall(
-            HttpRequest.Builder()
-                .url(LATEST_RELEASE_URL)
-                .header("User-Agent", API_USER_AGENT)
-                .build()
-        ).execute()
-        response.use {
-            if (!it.isSuccessful) {
+        val tag = fetchLatestTag() ?: return null
+        val assetsHtml = fetchBody(EXPANDED_ASSETS_URL + tag) ?: return null
+        val url = apkUrlPattern.find(assetsHtml)?.value ?: return null
+        return RemoteVersion(tag, "https://github.com$url")
+    }
+
+    private fun fetchLatestTag(): String? {
+        // 不跟随重定向，直接读 302 的 Location 提取 tag
+        val request = HttpRequest.Builder()
+            .url(LATEST_RELEASE_URL)
+            .header("User-Agent", HTTP_USER_AGENT)
+            .build()
+        client.newCall(request).execute().use { response ->
+            if (!response.isRedirect) {
                 return null
             }
-            val root = JsonParser.parseString(it.body()?.string() ?: return null).asJsonObject
-            val tag = root.get("tag_name")?.asString?.removePrefix("v") ?: return null
-            val assets = root.getAsJsonArray("assets") ?: return null
-            for (element in assets) {
-                val asset = element.asJsonObject
-                val name = asset.get("name")?.asString ?: continue
-                if (name.startsWith(APK_NAME_PREFIX) && name.endsWith(APK_NAME_SUFFIX)) {
-                    val url = asset.get("browser_download_url")?.asString ?: continue
-                    return RemoteVersion(tag, url)
-                }
+            val location = response.header("Location") ?: return null
+            val index = location.lastIndexOf(TAG_URL_PREFIX)
+            if (index < 0) {
+                return null
             }
-            return null
+            return location.substring(index + TAG_URL_PREFIX.length).removePrefix("v")
+        }
+    }
+
+    private fun fetchBody(url: String): String? {
+        val request = HttpRequest.Builder()
+            .url(url)
+            .header("User-Agent", HTTP_USER_AGENT)
+            .build()
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                return null
+            }
+            return response.body()?.string()
         }
     }
 
@@ -152,7 +174,7 @@ object UpdateManager {
         val response = client.newCall(
             HttpRequest.Builder()
                 .url(url)
-                .header("User-Agent", API_USER_AGENT)
+                .header("User-Agent", HTTP_USER_AGENT)
                 .build()
         ).execute()
         response.use {
