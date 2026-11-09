@@ -106,6 +106,65 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:text="@string/title_channel_layout"
+                android:textColor="#FFEEEEEE"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:id="@+id/channel_layout"
+                android:layout_width="@dimen/channel_segment_width"
+                android:layout_height="@dimen/channel_segment_height"
+                android:background="@drawable/bg_layout_segment_group"
+                android:descendantFocusability="blocksDescendants"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="horizontal"
+                android:padding="2dp">
+
+                <TextView
+                    android:id="@+id/channel_layout_horizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_layout_segment_item"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:gravity="center"
+                    android:text="@string/channel_layout_horizontal"
+                    android:textColor="@color/layout_segment_text"
+                    android:textSize="@dimen/channel_segment_text" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/channel_divider" />
+
+                <TextView
+                    android:id="@+id/channel_layout_vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_layout_segment_item"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:gravity="center"
+                    android:text="@string/channel_layout_vertical"
+                    android:textColor="@color/layout_segment_text"
+                    android:textSize="@dimen/channel_segment_text" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="@string/title_time"
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
@@ -135,28 +194,6 @@
                 android:id="@+id/switch_boot_startup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/title_exit_app"
-                android:textColor="#FFEEEEEE"
-                android:textSize="16sp" />
-
-            <Button
-                android:id="@+id/exit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/exit" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

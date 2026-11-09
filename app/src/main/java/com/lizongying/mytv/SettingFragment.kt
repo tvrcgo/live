@@ -1,6 +1,7 @@
 package com.lizongying.mytv
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,6 +53,8 @@ class SettingFragment : DialogFragment() {
             }
         }
 
+        bindChannelLayout()
+
         binding.switchTime.run {
             isChecked = SP.time
             setOnCheckedChangeListener { _, isChecked ->
@@ -76,11 +79,39 @@ class SettingFragment : DialogFragment() {
             }
         }
 
-        binding.exit.setOnClickListener{
-            requireActivity().finishAffinity()
+        return binding.root
+    }
+
+    private fun bindChannelLayout() {
+        fun render() {
+            binding.channelLayoutHorizontal.isSelected = SP.channelLayout == SP.LAYOUT_HORIZONTAL
+            binding.channelLayoutVertical.isSelected = SP.channelLayout == SP.LAYOUT_VERTICAL
         }
 
-        return binding.root
+        binding.channelLayout.setOnKeyListener { _, keyCode, event ->
+            if (event.action != KeyEvent.ACTION_DOWN) {
+                return@setOnKeyListener false
+            }
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_LEFT -> {
+                    SP.channelLayout = SP.LAYOUT_HORIZONTAL
+                    render()
+                    (activity as MainActivity).settingDelayHide()
+                    true
+                }
+
+                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                    SP.channelLayout = SP.LAYOUT_VERTICAL
+                    render()
+                    (activity as MainActivity).settingDelayHide()
+                    true
+                }
+
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> true
+                else -> false
+            }
+        }
+        render()
     }
 
     override fun onDestroyView() {

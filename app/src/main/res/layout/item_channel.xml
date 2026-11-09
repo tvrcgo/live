@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/channel_row_height"
+    android:background="@drawable/bg_channel_row"
+    android:baselineAligned="false"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="6dp"
+    android:paddingEnd="12dp">
+
+    <View
+        android:id="@+id/indicator"
+        android:layout_width="@dimen/channel_indicator_width"
+        android:layout_height="@dimen/channel_indicator_height"
+        android:background="@color/channel_indicator_color"
+        android:duplicateParentState="true" />
+
+    <TextView
+        android:id="@+id/number"
+        android:layout_width="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:duplicateParentState="true"
+        android:singleLine="true"
+        android:textColor="@color/channel_number_color"
+        android:textSize="@dimen/channel_number_size" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/channel_name_color"
+        android:textSize="@dimen/channel_name_size" />
+
+    <View
+        android:id="@+id/playing_dot"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/bg_channel_dot"
+        android:duplicateParentState="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/playing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:duplicateParentState="true"
+        android:text="@string/vertical_playing"
+        android:textColor="@color/channel_badge_color"
+        android:textSize="@dimen/channel_badge_size"
+        android:visibility="gone" />
+</LinearLayout>

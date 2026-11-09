@@ -15,6 +15,7 @@ import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
 import androidx.leanback.widget.RowPresenter
 import androidx.lifecycle.lifecycleScope
+import com.lizongying.mytv.models.ChannelGroup
 import com.lizongying.mytv.models.TVListViewModel
 import com.lizongying.mytv.models.TVViewModel
 import com.lizongying.mytv.source.ChannelListBuilder
@@ -38,6 +39,8 @@ class MainFragment : BrowseSupportFragment() {
     private var playingKey: String? = null
 
     private var rowsSignature: List<String> = emptyList()
+
+    private var rows: Map<String, List<TV>> = emptyMap()
 
     private var refreshed = false
 
@@ -70,6 +73,7 @@ class MainFragment : BrowseSupportFragment() {
 
     private fun bindRows(rows: Map<String, List<TV>>?) {
         val list = rows.orEmpty()
+        this.rows = list
         val signature = ChannelListBuilder.signature(list)
         if (signature == rowsSignature) {
             (activity as? MainActivity)?.showEmpty(emptyMessage(list))
@@ -122,6 +126,7 @@ class MainFragment : BrowseSupportFragment() {
 
         observeAll()
         (activity as? MainActivity)?.showEmpty(emptyMessage(list))
+        (activity as? MainActivity)?.onChannelsRebound()
     }
 
     fun refresh(onDone: ((List<SourceRepository.SourceStatus>) -> Unit)? = null) {
@@ -249,6 +254,12 @@ class MainFragment : BrowseSupportFragment() {
         }
         tvListViewModel.getTVViewModel(itemPosition)?.changed()
     }
+
+    fun channelGroups(): List<ChannelGroup> =
+        rows.map { (title, channels) -> ChannelGroup(title, channels) }
+
+    fun currentTVId(): Int =
+        tvListViewModel.getTVViewModel(itemPosition)?.getTV()?.id ?: -1
 
     fun play(itemPosition: Int) {
         view?.post {

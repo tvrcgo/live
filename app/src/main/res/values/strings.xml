@@ -2,13 +2,17 @@
     <string name="app_name">LIVE</string>
     <string name="title_channel_reversal">换台反转</string>
     <string name="title_channel_num">换台时显示频道号</string>
+    <string name="title_channel_layout">换台交互</string>
+    <string name="channel_layout_horizontal">横向</string>
+    <string name="channel_layout_vertical">竖向</string>
     <string name="title_boot_startup">开机自启</string>
     <string name="title_time">显示时间</string>
-    <string name="exit">退出</string>
+
+    <string name="vertical_playing">播放中</string>
+    <string name="vertical_channel_number">%1$03d</string>
 
     <string name="title_sources">直播源</string>
     <string name="source_manage">管理</string>
-    <string name="title_exit_app">退出应用</string>
     <string name="source_tip">添加 m3u 地址，启用后在启动时合并成一个频道列表</string>
     <string name="source_add">添加源</string>
     <string name="source_refresh">刷新全部</string>

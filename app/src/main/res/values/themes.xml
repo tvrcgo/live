@@ -4,5 +4,6 @@
         <item name="browsePaddingStart">11dp</item>
         <item name="browsePaddingEnd">11dp</item>
         <item name="browseRowsMarginTop">54dp</item>
+        <item name="android:colorAccent">@color/focus</item>
     </style>
 </resources>

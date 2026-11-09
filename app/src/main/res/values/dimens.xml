@@ -1,0 +1,14 @@
+<resources>
+    <dimen name="channel_row_height">38dp</dimen>
+    <dimen name="channel_rail_width">180dp</dimen>
+    <dimen name="channel_content_padding">24dp</dimen>
+    <dimen name="channel_indicator_width">3dp</dimen>
+    <dimen name="channel_indicator_height">22dp</dimen>
+    <dimen name="channel_name_size">16sp</dimen>
+    <dimen name="channel_number_size">12sp</dimen>
+    <dimen name="channel_count_size">11sp</dimen>
+    <dimen name="channel_badge_size">11sp</dimen>
+    <dimen name="channel_segment_width">200dp</dimen>
+    <dimen name="channel_segment_height">34dp</dimen>
+    <dimen name="channel_segment_text">14sp</dimen>
+</resources>

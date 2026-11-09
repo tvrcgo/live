@@ -28,6 +28,7 @@ class MainActivity : FragmentActivity() {
     private var playStarted = false
     private val playerFragment = PlayerFragment()
     private val mainFragment = MainFragment()
+    private val verticalChannelFragment = VerticalChannelFragment()
     private val infoFragment = InfoFragment()
     private val channelFragment = ChannelFragment()
     private var timeFragment = TimeFragment()
@@ -63,6 +64,8 @@ class MainActivity : FragmentActivity() {
                 .hide(emptyFragment)
                 .add(R.id.main_browse_fragment, mainFragment)
                 .hide(mainFragment)
+                .add(R.id.main_browse_fragment, verticalChannelFragment)
+                .hide(verticalChannelFragment)
                 .commit()
         }
         gestureDetector = GestureDetector(this, GestureListener())
@@ -127,14 +130,14 @@ class MainActivity : FragmentActivity() {
 
     fun stopPlay() {
         playerFragment.stop()
-        if (mainFragment.isHidden) {
-            supportFragmentManager.beginTransaction().show(mainFragment).commit()
+        showChannelList()
+        if (!mainFragment.isHidden) {
+            mainFragment.view?.requestFocus()
         }
-        mainFragment.view?.requestFocus()
     }
 
     private fun showChannel(channel: String) {
-        if (!mainFragment.isHidden) {
+        if (channelListVisible()) {
             return
         }
 
@@ -149,7 +152,9 @@ class MainActivity : FragmentActivity() {
 
     fun play(tvViewModel: TVViewModel) {
         playerFragment.play(tvViewModel)
-        mainFragment.view?.requestFocus()
+        if (!mainFragment.isHidden) {
+            mainFragment.view?.requestFocus()
+        }
     }
 
     fun play(itemPosition: Int) {
@@ -168,15 +173,58 @@ class MainActivity : FragmentActivity() {
         if (sourceFragment.isVisible) {
             return
         }
-        val transaction = supportFragmentManager.beginTransaction()
-
-        if (mainFragment.isHidden) {
-            transaction.show(mainFragment)
-            mainActive()
+        if (channelListVisible()) {
+            hideChannelList()
         } else {
+            showChannelList()
+        }
+    }
+
+    fun closeChannelList() {
+        hideChannelList()
+    }
+
+    fun onChannelsRebound() {
+        if (verticalChannelFragment.isAdded && !verticalChannelFragment.isHidden) {
+            val groups = mainFragment.channelGroups()
+            if (groups.isEmpty()) {
+                hideChannelList()
+            } else {
+                verticalChannelFragment.show(groups, mainFragment.currentTVId())
+            }
+        }
+    }
+
+    private fun channelListVisible(): Boolean =
+        !mainFragment.isHidden ||
+                (verticalChannelFragment.isAdded && !verticalChannelFragment.isHidden)
+
+    private fun showChannelList() {
+        if (channelListVisible()) {
+            return
+        }
+        if (SP.channelLayout == SP.LAYOUT_VERTICAL) {
+            val groups = mainFragment.channelGroups()
+            if (groups.isEmpty()) {
+                return
+            }
+            supportFragmentManager.beginTransaction().show(verticalChannelFragment).commit()
+            supportFragmentManager.executePendingTransactions()
+            verticalChannelFragment.show(groups, mainFragment.currentTVId())
+        } else {
+            supportFragmentManager.beginTransaction().show(mainFragment).commit()
+        }
+        mainActive()
+    }
+
+    private fun hideChannelList() {
+        val transaction = supportFragmentManager.beginTransaction()
+        if (!mainFragment.isHidden) {
             transaction.hide(mainFragment)
         }
-
+        if (verticalChannelFragment.isAdded && !verticalChannelFragment.isHidden) {
+            transaction.hide(verticalChannelFragment)
+        }
         transaction.commit()
     }
 
@@ -201,21 +249,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private val hideMain = Runnable {
-        if (!mainFragment.isHidden) {
-            supportFragmentManager.beginTransaction().hide(mainFragment).commit()
-        }
-    }
-
-    private fun mainFragmentIsHidden(): Boolean {
-        return mainFragment.isHidden
-    }
-
-    private fun hideMainFragment() {
-        if (!mainFragment.isHidden) {
-            supportFragmentManager.beginTransaction()
-                .hide(mainFragment)
-                .commit()
-        }
+        hideChannelList()
     }
 
     fun fragmentReady(tag: String) {
@@ -274,26 +308,13 @@ class MainActivity : FragmentActivity() {
             velocityY: Float
         ): Boolean {
             if (velocityY > 0) {
-                if (mainFragment.isHidden) {
+                if (!channelListVisible()) {
                     prev()
-                } else {
-//                    if (mainFragment.selectedPosition == 0) {
-//                        mainFragment.setSelectedPosition(
-//                            mainFragment.tvListViewModel.maxNum.size - 1,
-//                            false
-//                        )
-//                    }
                 }
             }
             if (velocityY < 0) {
-                if (mainFragment.isHidden) {
+                if (!channelListVisible()) {
                     next()
-                } else {
-//                    if (mainFragment.selectedPosition == mainFragment.tvListViewModel.maxNum.size - 1) {
-////                        mainFragment.setSelectedPosition(0, false)
-//                        hideMainFragment()
-//                        return false
-//                    }
                 }
             }
             return super.onFling(e1, e2, velocityX, velocityY)
@@ -301,7 +322,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun showSetting() {
-        if (!mainFragment.isHidden) {
+        if (channelListVisible()) {
             return
         }
 
@@ -326,41 +347,30 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun channelUp() {
-        if (mainFragment.isHidden) {
-            if (SP.channelReversal) {
-                next()
-                return
-            }
-            prev()
-        } else {
-//                    if (mainFragment.selectedPosition == 0) {
-//                        mainFragment.setSelectedPosition(
-//                            mainFragment.tvListViewModel.maxNum.size - 1,
-//                            false
-//                        )
-//                    }
+        if (channelListVisible()) {
+            return
         }
+        if (SP.channelReversal) {
+            next()
+            return
+        }
+        prev()
     }
 
     private fun channelDown() {
-        if (mainFragment.isHidden) {
-            if (SP.channelReversal) {
-                prev()
-                return
-            }
-            next()
-        } else {
-//                    if (mainFragment.selectedPosition == mainFragment.tvListViewModel.maxNum.size - 1) {
-////                        mainFragment.setSelectedPosition(0, false)
-//                        hideMainFragment()
-//                        return false
-//                    }
+        if (channelListVisible()) {
+            return
         }
+        if (SP.channelReversal) {
+            prev()
+            return
+        }
+        next()
     }
 
     private fun back() {
-        if (!mainFragmentIsHidden()) {
-            hideMainFragment()
+        if (channelListVisible()) {
+            hideChannelList()
             return
         }
 
@@ -493,14 +503,14 @@ class MainActivity : FragmentActivity() {
             }
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                if (!mainFragment.isVisible && !settingFragment.isVisible) {
+                if (!channelListVisible() && !settingFragment.isVisible) {
                     switchMainFragment()
                     return true
                 }
             }
 
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                if (!mainFragment.isVisible && !settingFragment.isVisible) {
+                if (!channelListVisible() && !settingFragment.isVisible) {
                     showSetting()
                     return true
                 }
@@ -518,7 +528,7 @@ class MainActivity : FragmentActivity() {
     override fun onResume() {
         Log.i(TAG, "onResume")
         super.onResume()
-        if (!mainFragment.isHidden) {
+        if (channelListVisible()) {
             handler.postDelayed(hideMain, delayHideMain)
         }
     }
