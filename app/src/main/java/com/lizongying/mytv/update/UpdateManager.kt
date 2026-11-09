@@ -24,10 +24,10 @@ object UpdateManager {
         "https://github.com/tvrcgo/live/releases/expanded_assets/"
     private const val TAG_URL_PREFIX = "/releases/tag/"
     private const val APK_URL_PREFIX = "/releases/download/"
+    private const val APK_NAME_PREFIX = "live-"
     // GitHub 对非浏览器 UA 返回无关页面，HTML 通道必须用浏览器式 UA
     private const val HTTP_USER_AGENT =
         "Mozilla/5.0 (Linux; Android 9) AppleWebKit/537.36"
-    private const val APK_NAME_PREFIX = "my-tv-"
     private const val APK_MIME_TYPE = "application/vnd.android.package-archive"
     private const val UPDATE_DIR_NAME = "updates"
     private const val CONNECT_TIMEOUT_SECONDS = 10L
@@ -99,7 +99,7 @@ object UpdateManager {
         // 下载生命周期独立于设置页，协程内只持有 applicationContext，避免泄漏 Activity
         val appContext = context.applicationContext
         downloadJob = scope.launch {
-            val apk = File(updateDir(appContext), "my-tv-${remote.name}.apk")
+            val apk = File(updateDir(appContext), "live-${remote.name}.apk")
             try {
                 downloadTo(remote.apkUrl, apk) { percent ->
                     setState(State.Downloading(percent))
@@ -127,8 +127,9 @@ object UpdateManager {
 
     // 走 HTML 页面通道：github.com/releases/latest 302 响应头带最新 tag，
     // expanded_assets 页面含资产链接；api.github.com 匿名限流 60 次/IP/小时会持续失败
+    // 下载 URL 结构：/releases/download/<tag>/<live-版本号.apk>，tag 段需通配
     private val apkUrlPattern =
-        Regex("$APK_URL_PREFIX$APK_NAME_PREFIX[^\"'<]+\\.apk")
+        Regex("$APK_URL_PREFIX[^\"'<]+/$APK_NAME_PREFIX[^\"'<]+\\.apk")
 
     private fun fetchLatest(): RemoteVersion? {
         val tag = fetchLatestTag() ?: return null
