@@ -18,6 +18,7 @@
     <color name="channel_segment_border">#78868A</color>
     <color name="channel_segment_text_dim">#AAB4B7</color>
     <color name="flat_panel">#B3000000</color>
+    <color name="info_panel">#F2000000</color>
     <color name="flat_row">#12FFFFFF</color>
     <color name="play_error_text">#FFEEEEEE</color>
 
