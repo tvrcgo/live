@@ -11,6 +11,8 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        SP.init(this)
+
         displayMetrics = DisplayMetrics()
         val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 //        windowManager.defaultDisplay.getRealMetrics(displayMetrics)
