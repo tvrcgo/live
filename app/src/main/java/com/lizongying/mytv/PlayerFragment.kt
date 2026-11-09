@@ -3,6 +3,7 @@ package com.lizongying.mytv
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
@@ -12,13 +13,20 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.annotation.OptIn
 import androidx.fragment.app.Fragment
+import androidx.media3.common.C
+import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
 import com.google.android.exoplayer2.DefaultLoadControl as LegacyLoadControl
 import com.google.android.exoplayer2.ExoPlaybackException
@@ -45,6 +53,8 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
     private val handler = Handler(Looper.getMainLooper())
     private var retryCount = 0
     private var retryUrl: String? = null
+    private var playFailed = false
+    private var lastNetworkRetryAt = 0L
 
     private val retry = Runnable {
         tvViewModel?.let { play(it) }
@@ -74,6 +84,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                 playerView!!.player = activity?.let {
                     ExoPlayer.Builder(it)
                         .setLoadControl(loadControl())
+                        .setMediaSourceFactory(mediaSourceFactory())
                         .build()
                 }
                 playerView!!.player?.playWhenReady = true
@@ -94,8 +105,16 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                         }
                     }
 
+                    override fun onTracksChanged(tracks: Tracks) {
+                        val info = playbackInfo(tracks)
+                        if (info.isNotEmpty()) {
+                            (activity as? MainActivity)?.showPlaybackInfo(info)
+                        }
+                    }
+
                     override fun onRenderedFirstFrame() {
                         retryCount = 0
+                        playFailed = false
                         hideBlackScreen()
                     }
 
@@ -103,7 +122,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                         super.onPlayerError(error)
 
                         Log.e(TAG, "PlaybackException $error")
-                        scheduleRetry()
+                        scheduleRetry(errorText(error))
                     }
                 })
                 pendingUrl?.let {
@@ -126,6 +145,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
             retryUrl = url
             retryCount = 0
         }
+        playFailed = false
         showBlackScreen()
         hidePlayError()
         val player = playerView?.player
@@ -144,6 +164,19 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
     fun stop() {
         playerView?.player?.stop()
         exoPlayer?.stop()
+    }
+
+    fun onNetworkAvailable() {
+        if (!playFailed) {
+            return
+        }
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastNetworkRetryAt < NETWORK_RETRY_THROTTLE_MS) {
+            return
+        }
+        lastNetworkRetryAt = now
+        retryCount = 0
+        tvViewModel?.let { play(it) }
     }
 
     override fun onStart() {
@@ -191,15 +224,84 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         _binding = null
     }
 
-    private fun scheduleRetry() {
+    private fun scheduleRetry(message: String) {
         showBlackScreen()
         val delay = RetryPolicy.nextDelay(retryCount)
         if (delay == null) {
-            showPlayError()
+            showPlayError(message)
             return
         }
         retryCount++
         handler.postDelayed(retry, delay)
+    }
+
+    private fun errorText(error: PlaybackException): String {
+        return getString(PlaybackErrors.messageRes(error.errorCode))
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun playbackInfo(tracks: Tracks): String {
+        val parts = mutableListOf<String>()
+        val video = trackFormat(tracks, C.TRACK_TYPE_VIDEO)
+        if (video != null) {
+            if (video.width > 0 && video.height > 0) {
+                parts.add("${video.width}x${video.height}")
+            }
+            if (video.bitrate > 0) {
+                parts.add("${video.bitrate / 1000}kbps")
+            }
+            videoCodecName(video.sampleMimeType)?.let { parts.add(it) }
+        }
+        val audio = trackFormat(tracks, C.TRACK_TYPE_AUDIO)
+        if (audio != null) {
+            val channels = if (audio.channelCount > 0) " ${audio.channelCount}ch" else ""
+            parts.add(audioCodecName(audio.sampleMimeType) + channels)
+        }
+        return parts.filter { it.isNotBlank() }.joinToString(" · ")
+    }
+
+    private fun trackFormat(tracks: Tracks, type: Int): Format? {
+        val group = tracks.groups.firstOrNull { it.type == type } ?: return null
+        for (index in 0 until group.length) {
+            if (group.isTrackSupported(index)) {
+                return group.getTrackFormat(index)
+            }
+        }
+        return null
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun videoCodecName(mimeType: String?): String? {
+        return when (mimeType) {
+            MimeTypes.VIDEO_H264 -> "H.264"
+            MimeTypes.VIDEO_H265 -> "HEVC"
+            MimeTypes.VIDEO_AV1 -> "AV1"
+            MimeTypes.VIDEO_VP9 -> "VP9"
+            MimeTypes.VIDEO_MPEG2 -> "MPEG-2"
+            else -> null
+        }
+    }
+
+    private fun audioCodecName(mimeType: String?): String? {
+        return when (mimeType) {
+            MimeTypes.AUDIO_AAC -> "AAC"
+            MimeTypes.AUDIO_AC3 -> "AC3"
+            MimeTypes.AUDIO_E_AC3 -> "EAC3"
+            MimeTypes.AUDIO_MPEG_L1 -> "MP1"
+            MimeTypes.AUDIO_MPEG_L2 -> "MP2"
+            MimeTypes.AUDIO_MPEG -> "MP3"
+            else -> null
+        }
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun mediaSourceFactory(): DefaultMediaSourceFactory {
+        val http = DefaultHttpDataSource.Factory()
+            .setUserAgent(Utils.USER_AGENT)
+            .setConnectTimeoutMs(CONNECT_TIMEOUT_MS)
+            .setReadTimeoutMs(READ_TIMEOUT_MS)
+            .setAllowCrossProtocolRedirects(true)
+        return DefaultMediaSourceFactory(DefaultDataSource.Factory(requireContext(), http))
     }
 
     private fun showBlackScreen() {
@@ -210,8 +312,10 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         _binding?.blackScreen?.visibility = View.GONE
     }
 
-    private fun showPlayError() {
+    private fun showPlayError(message: String) {
         showBlackScreen()
+        playFailed = true
+        _binding?.playError?.text = message
         _binding?.playError?.visibility = View.VISIBLE
     }
 
@@ -254,6 +358,10 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         private const val BUFFER_FOR_PLAYBACK_MS = 2_000
         private const val BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS = 4_000
         private const val TARGET_BUFFER_BYTES = 32 * 1024 * 1024
+
+        private const val CONNECT_TIMEOUT_MS = 8_000
+        private const val READ_TIMEOUT_MS = 15_000
+        private const val NETWORK_RETRY_THROTTLE_MS = 3_000
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
@@ -270,7 +378,12 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         exoPlayer?.addListener(object : LegacyPlayer.EventListener {
             override fun onPlayerError(error: ExoPlaybackException) {
                 Log.e(TAG, "LegacyPlaybackException $error")
-                showPlayError()
+                val message = if (error.type == ExoPlaybackException.TYPE_RENDERER) {
+                    getString(R.string.play_failed_decode)
+                } else {
+                    getString(R.string.play_failed_network)
+                }
+                showPlayError(message)
             }
         })
     }

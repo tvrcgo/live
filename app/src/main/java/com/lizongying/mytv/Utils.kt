@@ -9,6 +9,8 @@ import java.util.Locale
 
 object Utils {
 
+    const val USER_AGENT = "VLC/3.0.20 LibVLC/3.0.20"
+
     fun getDateFormat(format: String): String {
         return SimpleDateFormat(
             format,

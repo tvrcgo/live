@@ -3,6 +3,7 @@ package com.lizongying.mytv.source
 import android.content.Context
 import com.google.gson.Gson
 import com.lizongying.mytv.TV
+import com.lizongying.mytv.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -113,7 +114,12 @@ class SourceRepository(private val context: Context) {
 
     private fun fetch(source: Source): Fetched {
         return try {
-            client.newCall(HttpRequest.Builder().url(source.url).build()).execute().use { response ->
+            client.newCall(
+                HttpRequest.Builder()
+                    .url(source.url)
+                    .header("User-Agent", Utils.USER_AGENT)
+                    .build()
+            ).execute().use { response ->
                 if (!response.isSuccessful) {
                     return Fetched.Err("HTTP ${response.code()}")
                 }

@@ -33,4 +33,8 @@
     <string name="empty_go_settings">去设置</string>
 
     <string name="play_failed">当前频道无法播放\n按上下键切换频道，或检查直播源</string>
+    <string name="play_failed_network">网络连接失败或超时\n请检查网络连接，或换台再试</string>
+    <string name="play_failed_http">直播源返回错误\n源可能已失效，请刷新直播源</string>
+    <string name="play_failed_format">无法识别该频道的格式\n可能不是直播流，或需要更换播放地址</string>
+    <string name="play_failed_decode">设备无法解码该频道\n可换台，或更换编码更常见的直播源</string>
 </resources>

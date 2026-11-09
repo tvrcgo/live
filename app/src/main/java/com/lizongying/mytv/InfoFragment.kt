@@ -17,6 +17,9 @@ class InfoFragment : Fragment() {
     private val handler = Handler()
     private val delay: Long = 3000
 
+    private var baseDesc = ""
+    private var playbackInfo = ""
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,13 +38,31 @@ class InfoFragment : Fragment() {
             .load(tv.logo)
             .into(binding.infoLogo)
 
-        binding.infoDesc.text = listOf(tv.channel, tv.sourceName)
+        baseDesc = listOf(tv.channel, tv.sourceName)
             .filter { it.isNotEmpty() }
             .joinToString(" · ")
+        playbackInfo = ""
+        render()
 
         handler.removeCallbacks(removeRunnable)
         view?.visibility = View.VISIBLE
         handler.postDelayed(removeRunnable, delay)
+    }
+
+    fun updatePlaybackInfo(text: String) {
+        playbackInfo = text
+        if (_binding == null || view?.visibility != View.VISIBLE) {
+            return
+        }
+        render()
+        handler.removeCallbacks(removeRunnable)
+        handler.postDelayed(removeRunnable, delay)
+    }
+
+    private fun render() {
+        binding.infoDesc.text = listOf(baseDesc, playbackInfo)
+            .filter { it.isNotEmpty() }
+            .joinToString(" · ")
     }
 
     override fun onResume() {

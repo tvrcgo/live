@@ -80,11 +80,12 @@ class MainActivity : FragmentActivity() {
                     Log.i(TAG, "net ${Build.VERSION.SDK_INT}")
                     if (this@MainActivity.isNetworkConnected) {
                         Log.i(TAG, "net isNetworkConnected")
+                        playerFragment.onNetworkAvailable()
                         networkReady++
                         checkReady()
                     }
                 }
-            })
+            }, handler)
         } else {
             Log.i(TAG, "net ${Build.VERSION.SDK_INT}")
             networkReady++
@@ -98,6 +99,10 @@ class MainActivity : FragmentActivity() {
         if (SP.channelNum) {
             channelFragment.show(tvViewModel)
         }
+    }
+
+    fun showPlaybackInfo(text: String) {
+        infoFragment.updatePlaybackInfo(text)
     }
 
     fun showEmpty(message: String) {
