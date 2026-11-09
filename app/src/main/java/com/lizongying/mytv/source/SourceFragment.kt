@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.lizongying.mytv.FlatDialogFragment
 import com.lizongying.mytv.MainActivity
@@ -25,9 +26,6 @@ class SourceFragment : FlatDialogFragment(0.6f, 0.9f) {
     ): View {
         _binding = SourceBinding.inflate(inflater, container, false)
 
-        binding.sourceAdd.setOnClickListener { openEdit(null) }
-        binding.sourceRefresh.setOnClickListener { refresh() }
-
         statuses = (activity as? MainActivity)?.sourceStatuses().orEmpty().associateBy { it.id }
         render()
         return binding.root
@@ -46,10 +44,20 @@ class SourceFragment : FlatDialogFragment(0.6f, 0.9f) {
             empty.text = getString(R.string.source_empty)
             empty.setTextColor(0xFFEEEEEE.toInt())
             empty.textSize = 16f
-            container.addView(empty)
-            return
+            empty.setPadding(
+                resources.getDimensionPixelSize(R.dimen.setting_row_padding_h), 0,
+                resources.getDimensionPixelSize(R.dimen.setting_row_padding_h), 0
+            )
+            container.addView(
+                empty,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
         }
 
+        // Google TV leanback-preference 满行宽行：行确认进编辑，开关行内切换
         for (source in sources) {
             val item = SourceItemBinding.inflate(layoutInflater, container, false)
             item.itemName.text = source.name
@@ -60,17 +68,34 @@ class SourceFragment : FlatDialogFragment(0.6f, 0.9f) {
                 SourceStore.setEnabled(source.id, checked)
                 refresh()
             }
-            item.itemEdit.setOnClickListener { openEdit(source) }
-            item.itemDelete.setOnClickListener {
-                SourceStore.remove(source.id)
-                statuses = statuses - source.id
-                view?.post {
-                    render()
-                    refresh()
-                }
-            }
+            item.root.setOnClickListener { openEdit(source) }
             container.addView(item.root)
         }
+
+        // 列表末尾固定「＋ 添加直播源」虚线行
+        val addRow = TextView(requireContext())
+        addRow.text = getString(R.string.source_add)
+        addRow.setTextColor(0xFF8FD3B5.toInt())
+        addRow.textSize = 16f
+        addRow.setBackgroundResource(R.drawable.bg_source_add_row)
+        addRow.gravity = android.view.Gravity.CENTER_VERTICAL
+        addRow.minHeight = resources.getDimensionPixelSize(R.dimen.source_row_height)
+        addRow.setPadding(
+            resources.getDimensionPixelSize(R.dimen.setting_row_padding_h), 0,
+            resources.getDimensionPixelSize(R.dimen.setting_row_padding_h), 0
+        )
+        addRow.isFocusable = true
+        addRow.isClickable = true
+        addRow.setOnClickListener { openEdit(null) }
+        container.addView(
+            addRow,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = resources.getDimensionPixelSize(R.dimen.source_add_margin_top)
+            }
+        )
     }
 
     private fun statusText(status: SourceRepository.SourceStatus?): String {

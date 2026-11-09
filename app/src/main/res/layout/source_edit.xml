@@ -2,9 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/flat_panel"
+    android:background="@color/flat_edit_panel"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:paddingStart="@dimen/setting_row_padding_h"
+    android:paddingEnd="@dimen/setting_row_padding_h"
+    android:paddingTop="24dp"
+    android:paddingBottom="16dp">
 
     <TextView
         android:id="@+id/edit_title"
@@ -12,27 +15,50 @@
         android:layout_height="wrap_content"
         android:text="@string/source_add"
         android:textColor="#FFEEEEEE"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/source_name_hint"
+        android:textColor="#8A9496"
+        android:textSize="12sp" />
 
     <EditText
         android:id="@+id/edit_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_edit_field"
         android:hint="@string/source_name_hint"
+        android:importantForAutofill="no"
         android:inputType="text"
+        android:padding="12dp"
         android:singleLine="true"
         android:textColor="#FFEEEEEE"
         android:textColorHint="#80EEEEEE"
         android:textSize="16sp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/source_url_hint"
+        android:textColor="#8A9496"
+        android:textSize="12sp" />
+
     <EditText
         android:id="@+id/edit_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_edit_field"
         android:hint="@string/source_url_hint"
+        android:importantForAutofill="no"
         android:inputType="textUri"
+        android:padding="12dp"
         android:singleLine="true"
         android:textColor="#FFEEEEEE"
         android:textColorHint="#80EEEEEE"
@@ -42,29 +68,46 @@
         android:id="@+id/edit_error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/channel_badge"
         android:textSize="13sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical|end"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/edit_ok"
+            android:id="@+id/edit_delete"
             style="@style/FlatButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/source_ok" />
+            android:text="@string/source_delete"
+            android:textColor="@color/channel_badge"
+            android:visibility="gone" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/edit_cancel"
             style="@style/FlatButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:text="@string/source_cancel" />
+
+        <Button
+            android:id="@+id/edit_ok"
+            style="@style/FlatButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:backgroundTint="@color/source_ok_button"
+            android:text="@string/source_ok"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 </LinearLayout>

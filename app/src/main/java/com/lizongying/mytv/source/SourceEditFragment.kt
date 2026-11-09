@@ -1,5 +1,6 @@
 package com.lizongying.mytv.source
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +36,11 @@ class SourceEditFragment : FlatDialogFragment(0.6f, 0f) {
 
         binding.editOk.setOnClickListener { save(existing) }
         binding.editCancel.setOnClickListener { dismiss() }
+        // 删除仅编辑已有源时可见；危险操作走二次确认
+        if (existing != null) {
+            binding.editDelete.visibility = View.VISIBLE
+            binding.editDelete.setOnClickListener { confirmDelete(existing) }
+        }
 
         return binding.root
     }
@@ -63,6 +69,21 @@ class SourceEditFragment : FlatDialogFragment(0.6f, 0f) {
         } else {
             binding.editError.text = error
         }
+    }
+
+    private fun confirmDelete(existing: Source) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.source_delete_confirm_title)
+            .setMessage(
+                getString(R.string.source_delete_confirm_msg, existing.name.ifEmpty { existing.url })
+            )
+            .setPositiveButton(R.string.source_delete) { _, _ ->
+                SourceStore.remove(existing.id)
+                onSaved?.invoke()
+                dismiss()
+            }
+            .setNegativeButton(R.string.source_cancel, null)
+            .show()
     }
 
     override fun onDestroyView() {

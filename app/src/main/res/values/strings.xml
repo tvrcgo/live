@@ -14,10 +14,12 @@
 
     <string name="title_sources">直播源</string>
     <string name="source_tip">添加 m3u 地址，启用后在启动时合并成一个频道列表</string>
-    <string name="source_add">添加源</string>
+    <string name="source_add">＋ 添加直播源</string>
     <string name="source_refresh">刷新全部</string>
-    <string name="source_edit">编辑</string>
+    <string name="source_edit">编辑直播源</string>
     <string name="source_delete">删除</string>
+    <string name="source_delete_confirm_title">删除直播源</string>
+    <string name="source_delete_confirm_msg">删除后不可恢复：%1$s</string>
     <string name="source_enabled">启用</string>
     <string name="source_name_hint">名称（可留空，默认取域名）</string>
     <string name="source_url_hint">m3u 地址（http:// 或 https://）</string>

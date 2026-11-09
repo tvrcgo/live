@@ -8,56 +8,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingTop="20dp"
+        android:paddingBottom="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h"
             android:text="@string/title_sources"
             android:textColor="#FFEEEEEE"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h"
             android:text="@string/source_tip"
             android:textColor="#B3EEEEEE"
             android:textSize="13sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/source_add"
-                style="@style/FlatButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/source_add" />
-
-            <Button
-                android:id="@+id/source_refresh"
-                style="@style/FlatButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/source_refresh" />
-        </LinearLayout>
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1">
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:id="@+id/source_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:paddingBottom="8dp" />
         </ScrollView>
     </LinearLayout>
 </FrameLayout>
