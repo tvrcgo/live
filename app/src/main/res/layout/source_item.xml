@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_setting_row"
     android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
     android:focusable="true"
     android:gravity="center_vertical"
     android:minHeight="@dimen/source_row_height"
@@ -15,6 +16,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:duplicateParentState="true"
         android:orientation="vertical">
 
         <TextView
@@ -46,9 +48,12 @@
             android:textSize="12sp" />
     </LinearLayout>
 
+    <!-- 纯显示开关：行是唯一焦点单元，左右键切换启用 -->
     <Switch
         android:id="@+id/item_enabled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        android:clickable="false"
+        android:focusable="false" />
 </LinearLayout>

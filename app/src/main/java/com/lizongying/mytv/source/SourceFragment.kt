@@ -1,6 +1,8 @@
 package com.lizongying.mytv.source
 
 import android.os.Bundle
+import android.view.Gravity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,18 +59,31 @@ class SourceFragment : FlatDialogFragment(0.6f, 0.9f) {
             )
         }
 
-        // Google TV leanback-preference 满行宽行：行确认进编辑，开关行内切换
+        // 单焦点行模型（leanback-preference）：↑↓ 行间移动，
+        // ←→ 切换启用，确认进编辑；开关仅显示状态
         for (source in sources) {
             val item = SourceItemBinding.inflate(layoutInflater, container, false)
             item.itemName.text = source.name
             item.itemUrl.text = source.url
             item.itemStatus.text = statusText(statuses[source.id])
             item.itemEnabled.isChecked = source.enabled
-            item.itemEnabled.setOnCheckedChangeListener { _, checked ->
-                SourceStore.setEnabled(source.id, checked)
-                refresh()
-            }
             item.root.setOnClickListener { openEdit(source) }
+            item.root.setOnKeyListener { _, keyCode, event ->
+                if (event.action != KeyEvent.ACTION_DOWN) {
+                    return@setOnKeyListener false
+                }
+                when (keyCode) {
+                    KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        val next = !item.itemEnabled.isChecked
+                        item.itemEnabled.isChecked = next
+                        SourceStore.setEnabled(source.id, next)
+                        refresh()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
             container.addView(item.root)
         }
 
@@ -78,7 +93,7 @@ class SourceFragment : FlatDialogFragment(0.6f, 0.9f) {
         addRow.setTextColor(0xFF8FD3B5.toInt())
         addRow.textSize = 16f
         addRow.setBackgroundResource(R.drawable.bg_source_add_row)
-        addRow.gravity = android.view.Gravity.CENTER_VERTICAL
+        addRow.gravity = Gravity.CENTER_VERTICAL
         addRow.minHeight = resources.getDimensionPixelSize(R.dimen.source_row_height)
         addRow.setPadding(
             resources.getDimensionPixelSize(R.dimen.setting_row_padding_h), 0,
