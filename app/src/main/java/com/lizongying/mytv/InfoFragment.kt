@@ -60,9 +60,9 @@ class InfoFragment : Fragment() {
     }
 
     private fun render() {
-        binding.infoDesc.text = listOf(baseDesc, playbackInfo)
-            .filter { it.isNotEmpty() }
-            .joinToString(" · ")
+        binding.infoDesc.text = baseDesc
+        binding.infoTech.text = playbackInfo
+        binding.infoTech.visibility = if (playbackInfo.isEmpty()) View.GONE else View.VISIBLE
     }
 
     override fun onResume() {

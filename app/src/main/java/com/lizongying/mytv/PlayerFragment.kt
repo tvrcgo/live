@@ -244,20 +244,26 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         val parts = mutableListOf<String>()
         val video = trackFormat(tracks, C.TRACK_TYPE_VIDEO)
         if (video != null) {
-            if (video.width > 0 && video.height > 0) {
-                parts.add("${video.width}x${video.height}")
-            }
-            if (video.bitrate > 0) {
-                parts.add("${video.bitrate / 1000}kbps")
-            }
+            heightLabel(video.height)?.let { parts.add(it) }
             videoCodecName(video.sampleMimeType)?.let { parts.add(it) }
         }
         val audio = trackFormat(tracks, C.TRACK_TYPE_AUDIO)
         if (audio != null) {
-            val channels = if (audio.channelCount > 0) " ${audio.channelCount}ch" else ""
-            parts.add(audioCodecName(audio.sampleMimeType) + channels)
+            audioCodecName(audio.sampleMimeType)?.let { parts.add(it) }
         }
-        return parts.filter { it.isNotBlank() }.joinToString(" · ")
+        return parts.joinToString(" · ")
+    }
+
+    private fun heightLabel(height: Int): String? {
+        return when {
+            height <= 0 -> null
+            height >= 2160 -> "2160p"
+            height >= 1080 -> "1080p"
+            height >= 720 -> "720p"
+            height >= 576 -> "576p"
+            height >= 480 -> "480p"
+            else -> "${height}p"
+        }
     }
 
     private fun trackFormat(tracks: Tracks, type: Int): Format? {

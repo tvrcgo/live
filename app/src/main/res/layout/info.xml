@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/info_fragment"
     android:layout_width="320dp"
-    android:layout_height="80dp"
+    android:layout_height="110dp"
     android:layout_gravity="center_horizontal|bottom"
     android:layout_marginBottom="20dp"
     android:background="@drawable/rounded_background">
@@ -10,18 +10,16 @@
     <ImageView
         android:id="@+id/info_logo"
         android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:padding="10dp" />
+        android:layout_height="match_parent" />
 
     <LinearLayout
-        android:layout_width="216dp"
+        android:layout_width="212dp"
         android:layout_height="match_parent"
         android:layout_marginStart="100dp"
         android:background="#FF263238"
         android:gravity="start|center_vertical"
         android:orientation="vertical"
-        android:padding="7dp">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/textView"
@@ -43,6 +41,18 @@
             android:singleLine="true"
             android:textColor="#B3EEEEEE"
             android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/info_tech"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="4dp"
+            android:gravity="start"
+            android:singleLine="true"
+            android:textColor="#FFD9DE"
+            android:textSize="14sp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <View
