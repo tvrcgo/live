@@ -180,14 +180,16 @@ object UpdateManager {
         mainHandler.post { l(next) }
     }
 
-    private const val LATEST_RELEASE_URL =
-        "https://api.github.com/repos/tvrcgo/live/releases/latest"
-    private const val API_USER_AGENT = "tvrcgo-live"
-    private const val APK_NAME_PREFIX = "live-"
-    private const val APK_NAME_SUFFIX = ".apk"
-    private const val APK_MIME_TYPE = "application/vnd.android.package-archive"
-    private const val UPDATE_DIR_NAME = "updates"
-    private const val CONNECT_TIMEOUT_SECONDS = 10L
-    private const val READ_TIMEOUT_SECONDS = 60L
-    private const val DOWNLOAD_BUFFER_SIZE = 64 * 1024
+    private companion object {
+        const val LATEST_RELEASE_URL =
+            "https://api.github.com/repos/tvrcgo/live/releases/latest"
+        const val API_USER_AGENT = "tvrcgo-live"
+        const val APK_NAME_PREFIX = "live-"
+        const val APK_NAME_SUFFIX = ".apk"
+        const val APK_MIME_TYPE = "application/vnd.android.package-archive"
+        const val UPDATE_DIR_NAME = "updates"
+        const val CONNECT_TIMEOUT_SECONDS = 10L
+        const val READ_TIMEOUT_SECONDS = 60L
+        const val DOWNLOAD_BUFFER_SIZE = 64 * 1024
+    }
 }
