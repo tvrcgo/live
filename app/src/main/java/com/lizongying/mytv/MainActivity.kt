@@ -38,6 +38,8 @@ class MainActivity : FragmentActivity() {
 
     private var doubleBackToExitPressedOnce = false
 
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
+
     private lateinit var gestureDetector: GestureDetector
 
     private val handler = Handler()
@@ -73,8 +75,7 @@ class MainActivity : FragmentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val connectivityManager =
                 getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            connectivityManager.registerDefaultNetworkCallback(object :
-                ConnectivityManager.NetworkCallback() {
+            val callback = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     super.onAvailable(network)
                     Log.i(TAG, "net ${Build.VERSION.SDK_INT}")
@@ -85,7 +86,9 @@ class MainActivity : FragmentActivity() {
                         checkReady()
                     }
                 }
-            }, handler)
+            }
+            networkCallback = callback
+            connectivityManager.registerDefaultNetworkCallback(callback, handler)
         } else {
             Log.i(TAG, "net ${Build.VERSION.SDK_INT}")
             networkReady++
@@ -542,6 +545,15 @@ class MainActivity : FragmentActivity() {
         Log.i(TAG, "onPause")
         super.onPause()
         handler.removeCallbacks(hideMain)
+    }
+
+    override fun onDestroy() {
+        networkCallback?.let {
+            (getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+                .unregisterNetworkCallback(it)
+        }
+        networkCallback = null
+        super.onDestroy()
     }
 
     private companion object {
