@@ -33,9 +33,7 @@
             android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
-            android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
@@ -224,9 +222,7 @@
             android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
-            android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
