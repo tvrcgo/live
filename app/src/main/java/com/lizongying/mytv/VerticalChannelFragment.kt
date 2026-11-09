@@ -1,12 +1,15 @@
 package com.lizongying.mytv
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.leanback.widget.BaseGridView
 import androidx.leanback.widget.OnChildViewHolderSelectedListener
 import androidx.leanback.widget.ViewHolderTask
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +29,12 @@ class VerticalChannelFragment : Fragment() {
     private var activeGroup = 0
     private var currentId = -1
     private var selectedChannel = 0
+    // 正在播频道所在分类，粉条指示固定标记该分类
+    private var playingGroup = 0
+
+    // 分类连续移动时去抖：停顿后才重建频道列表预览，避免每键全量重绑
+    private val listHandler = Handler(Looper.getMainLooper())
+    private var pendingGroup = -1
 
     private val groupAdapter = GroupAdapter { onGroupClicked(it) }
     private val channelAdapter = ChannelAdapter { playChannel(it) }
@@ -40,6 +49,10 @@ class VerticalChannelFragment : Fragment() {
         binding.groupGrid.apply {
             setNumColumns(1)
             adapter = groupAdapter
+            // 关闭换数据动画：active 变更整表重绑，动画只增加开销
+            itemAnimator = null
+            // DPAD 连续移动的平滑滚动减速，滚动更柔
+            setSmoothScrollSpeedFactor(SMOOTH_SCROLL_FACTOR)
             setOnKeyInterceptListener { onGroupKey(it) }
             addOnChildViewHolderSelectedListener(object : OnChildViewHolderSelectedListener() {
                 override fun onChildViewHolderSelected(
@@ -61,6 +74,12 @@ class VerticalChannelFragment : Fragment() {
         binding.channelGrid.apply {
             setNumColumns(1)
             adapter = channelAdapter
+            // 关闭换数据动画：预览重建是整表置换，change 动画在低端电视上拖慢焦点移动
+            itemAnimator = null
+            // 焦点行到达边缘才滚动一行，滚动距离小而连续，避免跳变重对齐
+            setFocusScrollStrategy(BaseGridView.FOCUS_SCROLL_ITEM)
+            // DPAD 连续移动的平滑滚动减速，滚动更柔
+            setSmoothScrollSpeedFactor(SMOOTH_SCROLL_FACTOR)
             setOnKeyInterceptListener { onChannelKey(it) }
             addOnChildViewHolderSelectedListener(object : OnChildViewHolderSelectedListener() {
                 override fun onChildViewHolderSelected(
@@ -86,11 +105,14 @@ class VerticalChannelFragment : Fragment() {
         this.currentId = currentId
         val groupIndex = ChannelSelection.initialGroupIndex(groups, currentId)
         activeGroup = groupIndex
+        playingGroup = groupIndex
         val channelIndex = ChannelSelection.channelIndexForGroup(groups[groupIndex], currentId)
         selectedChannel = channelIndex
 
         // 清除隐藏期间残留的焦点，避免残留选中派发劫持本次定位、焦点闪动
         binding.root.clearFocus()
+        pendingGroup = -1
+        listHandler.removeCallbacks(pendingListUpdate)
         groupAdapter.submit(groups, groupIndex)
         channelAdapter.submit(groups[groupIndex].channels, currentId)
         // 必须在首个布局遍历前同步设置目标位置：post 会被 vsync 同步屏障
@@ -108,25 +130,40 @@ class VerticalChannelFragment : Fragment() {
         })
     }
 
+    companion object {
+        private const val LIST_UPDATE_DELAY_MILLIS = 80L
+        private const val SMOOTH_SCROLL_FACTOR = 2f
+    }
+
     private fun onGroupSelected(index: Int) {
         if (index !in groups.indices || index == activeGroup) return
         activeGroup = index
-        val group = groups[index]
-        val current = currentId
-        val channelIndex = ChannelSelection.channelIndexForGroup(group, current)
-        selectedChannel = channelIndex
+        selectedChannel = ChannelSelection.channelIndexForGroup(groups[index], currentId)
         groupAdapter.setActive(index)
         binding.groupGrid.post { groupAdapter.notifyDataSetChanged() }
-        binding.channelGrid.post {
-            channelAdapter.submit(group.channels, current)
-            // 焦点仍在分类栏，仅滚动预定位；setSelectedPosition 在 pending 更新时
-            // 由布局完成后的对齐逻辑保证滚动到位
-            binding.channelGrid.setSelectedPosition(channelIndex)
-        }
+        // 去抖：焦点快速掠过中间分类时不重建频道列表，停顿后预览最终分类
+        pendingGroup = index
+        listHandler.removeCallbacks(pendingListUpdate)
+        listHandler.postDelayed(pendingListUpdate, LIST_UPDATE_DELAY_MILLIS)
+    }
+
+    private val pendingListUpdate = Runnable {
+        val index = pendingGroup
+        pendingGroup = -1
+        if (_binding == null || index !in groups.indices) return@Runnable
+        selectedChannel = ChannelSelection.channelIndexForGroup(groups[index], currentId)
+        channelAdapter.submit(groups[index].channels, currentId)
+        binding.channelGrid.setSelectedPosition(selectedChannel)
     }
 
     private fun onGroupClicked(index: Int) {
         onGroupSelected(index)
+        // 进入列表前强制同步：取消去抖立即刷新，保证定位准确
+        listHandler.removeCallbacks(pendingListUpdate)
+        if (pendingGroup >= 0) {
+            pendingGroup = -1
+            channelAdapter.submit(groups[activeGroup].channels, currentId)
+        }
         focusChannelRow(selectedChannel)
     }
 
@@ -178,7 +215,7 @@ class VerticalChannelFragment : Fragment() {
             KeyEvent.KEYCODE_DPAD_RIGHT,
             KeyEvent.KEYCODE_DPAD_CENTER,
             KeyEvent.KEYCODE_ENTER -> {
-                if (event.action == KeyEvent.ACTION_DOWN) focusChannelRow(selectedChannel)
+                if (event.action == KeyEvent.ACTION_DOWN) onGroupClicked(activeGroup)
                 true
             }
 
@@ -197,6 +234,7 @@ class VerticalChannelFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        listHandler.removeCallbacks(pendingListUpdate)
         _binding = null
     }
 
@@ -228,7 +266,8 @@ class VerticalChannelFragment : Fragment() {
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
             val group = items[position]
-            holder.binding.indicator.isVisible = position == active
+            // 粉条固定标记正在播频道所在分类，不随浏览焦点移动
+            holder.binding.indicator.isVisible = position == playingGroup
             holder.binding.name.text = group.title
             holder.binding.count.text = group.channels.size.toString()
             holder.itemView.isSelected = position == active
