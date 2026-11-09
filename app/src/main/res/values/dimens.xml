@@ -13,4 +13,6 @@
     <dimen name="channel_segment_width">200dp</dimen>
     <dimen name="channel_segment_height">34dp</dimen>
     <dimen name="channel_segment_text">14sp</dimen>
+    <!-- 设置页条目行内左右 padding，Google TV leanback-preference 同款满行宽样式 -->
+    <dimen name="setting_row_padding_h">24dp</dimen>
 </resources>

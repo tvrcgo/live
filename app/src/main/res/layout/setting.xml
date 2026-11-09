@@ -12,13 +12,13 @@
         android:layout_gravity="center_vertical"
         android:orientation="vertical"
         android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp">
+        android:paddingBottom="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h"
             android:text="@string/app_name"
             android:textColor="#FFEEEEEE"
             android:textSize="20sp" />
@@ -27,13 +27,15 @@
             android:id="@+id/source_entry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/bg_setting_row"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h">
 
             <TextView
                 android:layout_width="0dp"
@@ -57,7 +59,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:minHeight="44dp"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h">
 
             <TextView
                 android:layout_width="0dp"
@@ -78,7 +83,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:minHeight="44dp"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h">
 
             <TextView
                 android:layout_width="0dp"
@@ -99,7 +107,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:minHeight="44dp"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h">
 
             <TextView
                 android:layout_width="0dp"
@@ -158,7 +169,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:minHeight="44dp"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h">
 
             <TextView
                 android:layout_width="0dp"
@@ -179,7 +193,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:minHeight="44dp"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -222,7 +239,9 @@
             android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h">
 
             <TextView
                 android:layout_width="0dp"
