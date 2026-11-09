@@ -1,12 +1,15 @@
 package com.lizongying.mytv
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.lizongying.mytv.databinding.SettingBinding
+import com.lizongying.mytv.update.UpdateManager
 
 
 class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
@@ -21,7 +24,7 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
     ): View {
         val context = requireContext() // It‘s safe to get context here.
         _binding = SettingBinding.inflate(inflater, container, false)
-        binding.version.text = "v${context.appVersionName}"
+        bindVersionRow(context)
 
         binding.switchChannelReversal.run {
             isChecked = SP.channelReversal
@@ -106,7 +109,61 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
         render()
     }
 
+    private fun bindVersionRow(context: Context) {
+        fun render(state: UpdateManager.State) {
+            val (textRes, textArg, highlight) = when (state) {
+                is UpdateManager.State.CheckFailed ->
+                    Triple(R.string.update_check_failed, null, false)
+
+                is UpdateManager.State.Available ->
+                    Triple(R.string.update_new_version, state.remote.name, true)
+
+                is UpdateManager.State.Downloading ->
+                    Triple(R.string.update_downloading, state.percent, true)
+
+                is UpdateManager.State.DownloadFailed ->
+                    Triple(R.string.update_download_failed, null, true)
+
+                is UpdateManager.State.Downloaded ->
+                    Triple(R.string.update_new_version, state.remote.name, true)
+
+                else -> Triple(R.string.update_current_version, context.appVersionName, false)
+            }
+            binding.versionStatus.text =
+                if (textArg == null) getString(textRes) else getString(textRes, textArg)
+            binding.versionStatus.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    if (highlight) R.color.version_highlight else R.color.version_text
+                )
+            )
+        }
+
+        UpdateManager.listener = { state ->
+            if (_binding != null) {
+                render(state)
+            }
+        }
+        render(UpdateManager.state)
+        UpdateManager.check(context)
+
+        binding.versionRow.setOnClickListener {
+            when (UpdateManager.state) {
+                is UpdateManager.State.Available,
+                is UpdateManager.State.DownloadFailed -> UpdateManager.download(context)
+
+                is UpdateManager.State.Downloaded -> UpdateManager.install(context)
+
+                is UpdateManager.State.CheckFailed -> UpdateManager.check(context)
+
+                else -> Unit
+            }
+            (activity as MainActivity).settingDelayHide()
+        }
+    }
+
     override fun onDestroyView() {
+        UpdateManager.listener = null
         super.onDestroyView()
         _binding = null
     }

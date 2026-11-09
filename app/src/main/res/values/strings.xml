@@ -38,4 +38,11 @@
     <string name="play_failed_http">直播源返回错误\n源可能已失效，请刷新直播源</string>
     <string name="play_failed_format">无法识别该频道的格式\n可能不是直播流，或需要更换播放地址</string>
     <string name="play_failed_decode">设备无法解码该频道\n可换台，或更换编码更常见的直播源</string>
+
+    <string name="title_version">版本</string>
+    <string name="update_current_version">v%1$s</string>
+    <string name="update_check_failed">检查失败</string>
+    <string name="update_new_version">新版本 v%1$s</string>
+    <string name="update_downloading">下载中 %1$d%%</string>
+    <string name="update_download_failed">下载失败</string>
 </resources>

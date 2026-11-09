@@ -20,4 +20,7 @@
     <color name="flat_panel">#B3000000</color>
     <color name="flat_row">#12FFFFFF</color>
     <color name="play_error_text">#FFEEEEEE</color>
+
+    <color name="version_text">#B3EEEEEE</color>
+    <color name="version_highlight">#6C9CFF</color>
 </resources>

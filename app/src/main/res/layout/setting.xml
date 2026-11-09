@@ -23,15 +23,6 @@
             android:textColor="#FFEEEEEE"
             android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/version"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="v$versionName"
-            android:textColor="#B3EEEEEE"
-            android:textSize="13sp" />
-
         <LinearLayout
             android:id="@+id/source_entry"
             android:layout_width="match_parent"
@@ -221,6 +212,36 @@
                 android:id="@+id/switch_boot_startup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/version_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="44dp"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_version"
+                android:textColor="#FFEEEEEE"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/version_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B3EEEEEE"
+                android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
