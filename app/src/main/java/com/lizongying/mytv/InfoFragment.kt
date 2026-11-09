@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.lizongying.mytv.databinding.InfoBinding
 import com.lizongying.mytv.models.TVViewModel
 
@@ -34,10 +33,6 @@ class InfoFragment : Fragment() {
         val tv = tvViewModel.getTV()
         binding.textView.text = tv.title
 
-        Glide.with(this)
-            .load(tv.logo)
-            .into(binding.infoLogo)
-
         baseDesc = listOf(tv.channel, tv.sourceName)
             .filter { it.isNotEmpty() }
             .joinToString(" · ")
@@ -60,9 +55,9 @@ class InfoFragment : Fragment() {
     }
 
     private fun render() {
-        binding.infoDesc.text = baseDesc
-        binding.infoTech.text = playbackInfo
-        binding.infoTech.visibility = if (playbackInfo.isEmpty()) View.GONE else View.VISIBLE
+        binding.infoDesc.text = listOf(baseDesc, playbackInfo)
+            .filter { it.isNotEmpty() }
+            .joinToString(" · ")
     }
 
     override fun onResume() {
