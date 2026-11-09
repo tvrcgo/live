@@ -68,6 +68,11 @@ class PlayerFragment : Fragment() {
                         .build()
                 }
                 playerView!!.player?.playWhenReady = true
+                // 禁用字幕轨：4K 频道的 DVB 图文（HLG/4K 角标）随流自动渲染，只干扰观看
+                playerView!!.player?.trackSelectionParameters =
+                    playerView!!.player?.trackSelectionParameters?.buildUpon()
+                        ?.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                        ?.build()
                 playerView!!.player?.addListener(object : Player.Listener {
                     override fun onVideoSizeChanged(videoSize: VideoSize) {
                         val ratio = playerView?.measuredWidth?.div(playerView?.measuredHeight!!)
