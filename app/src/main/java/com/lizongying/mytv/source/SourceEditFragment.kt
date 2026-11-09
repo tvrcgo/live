@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.fragment.app.DialogFragment
+import com.lizongying.mytv.FlatDialogFragment
 import com.lizongying.mytv.R
 import com.lizongying.mytv.databinding.SourceEditBinding
 
-class SourceEditFragment : DialogFragment() {
+class SourceEditFragment : FlatDialogFragment(0.6f, 0f) {
 
     private var _binding: SourceEditBinding? = null
     private val binding get() = _binding!!
@@ -17,11 +17,6 @@ class SourceEditFragment : DialogFragment() {
     var onSaved: (() -> Unit)? = null
 
     private var sourceId: String = ""
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, 0)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

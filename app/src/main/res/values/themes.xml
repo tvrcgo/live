@@ -6,4 +6,21 @@
         <item name="browseRowsMarginTop">54dp</item>
         <item name="android:colorAccent">@color/focus</item>
     </style>
+
+    <style name="FlatButton" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/bg_flat_button</item>
+        <item name="android:backgroundTint">@null</item>
+        <item name="android:textColor">@color/flat_button_text</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:elevation">0dp</item>
+    </style>
 </resources>

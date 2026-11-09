@@ -5,23 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.DialogFragment
+import com.lizongying.mytv.FlatDialogFragment
 import com.lizongying.mytv.MainActivity
 import com.lizongying.mytv.R
 import com.lizongying.mytv.databinding.SourceBinding
 import com.lizongying.mytv.databinding.SourceItemBinding
 
-class SourceFragment : DialogFragment() {
+class SourceFragment : FlatDialogFragment(0.6f, 0.9f) {
 
     private var _binding: SourceBinding? = null
     private val binding get() = _binding!!
 
     private var statuses: Map<String, SourceRepository.SourceStatus> = emptyMap()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, 0)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,7 +27,6 @@ class SourceFragment : DialogFragment() {
 
         binding.sourceAdd.setOnClickListener { openEdit(null) }
         binding.sourceRefresh.setOnClickListener { refresh() }
-        binding.sourceClose.setOnClickListener { dismiss() }
 
         statuses = (activity as? MainActivity)?.sourceStatuses().orEmpty().associateBy { it.id }
         render()

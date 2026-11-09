@@ -5,28 +5,13 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import androidx.fragment.app.DialogFragment
 import com.lizongying.mytv.databinding.SettingBinding
 
 
-class SettingFragment : DialogFragment() {
+class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
 
     private var _binding: SettingBinding? = null
     private val binding get() = _binding!!
-
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.apply {
-            addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, 0)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +20,7 @@ class SettingFragment : DialogFragment() {
     ): View {
         val context = requireContext() // It‘s safe to get context here.
         _binding = SettingBinding.inflate(inflater, container, false)
-        binding.version.text = "当前版本: v${context.appVersionName}"
+        binding.version.text = "v${context.appVersionName}"
 
         binding.switchChannelReversal.run {
             isChecked = SP.channelReversal

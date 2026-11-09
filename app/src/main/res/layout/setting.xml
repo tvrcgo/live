@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dialog"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/flat_panel"
     >
 
     <LinearLayout
-        android:layout_width="600dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FF263238"
+        android:layout_gravity="center_vertical"
         android:orientation="vertical"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
@@ -27,16 +28,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="当前版本: $versionName"
+            android:text="v$versionName"
             android:textColor="#B3EEEEEE"
             android:textSize="13sp" />
 
         <LinearLayout
+            android:id="@+id/source_entry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:minHeight="44dp"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -46,11 +54,13 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/source_entry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/source_manage" />
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:duplicateParentState="true"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/setting_chevron_text" />
         </LinearLayout>
 
         <LinearLayout
