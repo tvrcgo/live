@@ -7,7 +7,8 @@ data class TV(
     var title: String,
     var videoUrl: List<String>,
     var channel: String = "",
-    var logo: Any = "",
+    // 最终要显示的台标地址：按频道名匹配到的 CDN 地址，否则回退源里的 tvg-logo，都没有为空
+    var logo: String = "",
     var sourceName: String = "",
 
     ) : Serializable {

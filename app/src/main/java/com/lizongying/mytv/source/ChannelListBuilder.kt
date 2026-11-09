@@ -1,12 +1,14 @@
 package com.lizongying.mytv.source
 
 import com.lizongying.mytv.TV
+import com.lizongying.mytv.logo.LogoStore
 
 object ChannelListBuilder {
 
     fun build(
         sources: List<Source>,
         channels: Map<String, List<M3uChannel>>,
+        logos: LogoStore,
     ): Map<String, List<TV>> {
         val showSourceName = sources.size > 1
         val grouped = LinkedHashMap<String, MutableList<TV>>()
@@ -18,7 +20,7 @@ object ChannelListBuilder {
                         title = channel.title,
                         videoUrl = listOf(channel.url),
                         channel = group,
-                        logo = channel.logo,
+                        logo = logos.url(channel.title) ?: channel.logo,
                         sourceName = if (showSourceName) source.name else "",
                     )
                 )

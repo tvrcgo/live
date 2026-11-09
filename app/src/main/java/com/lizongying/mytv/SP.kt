@@ -31,6 +31,9 @@ object SP {
     // Live sources in json
     private const val KEY_SOURCES = "sources"
 
+    // Probed CDN host for channel logos
+    private const val KEY_LOGO_HOST = "logo_host"
+
     private lateinit var sp: SharedPreferences
 
     /**
@@ -72,4 +75,8 @@ object SP {
     var sources: String
         get() = sp.getString(KEY_SOURCES, "[]") ?: "[]"
         set(value) = sp.edit().putString(KEY_SOURCES, value).apply()
+
+    var logoHost: String
+        get() = sp.getString(KEY_LOGO_HOST, "") ?: ""
+        set(value) = sp.edit().putString(KEY_LOGO_HOST, value).apply()
 }

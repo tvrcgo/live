@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.lizongying.mytv.TV
 import com.lizongying.mytv.Utils
+import com.lizongying.mytv.logo.LogoStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -46,6 +47,7 @@ class SourceRepository(private val context: Context) {
 
     private val gson = Gson()
     private val cacheFile = File(context.filesDir, CACHE_NAME)
+    private val logos = LogoStore.load(context)
     private val client = OkHttpClient.Builder()
         .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -57,7 +59,7 @@ class SourceRepository(private val context: Context) {
         if (sources.isEmpty()) {
             return null
         }
-        return ChannelListBuilder.build(sources, resolveChannels(sources, cached.sources))
+        return ChannelListBuilder.build(sources, resolveChannels(sources, cached.sources), logos)
     }
 
     suspend fun refresh(): RefreshResult = withContext(Dispatchers.IO) {
@@ -94,7 +96,7 @@ class SourceRepository(private val context: Context) {
         entries.keys.retainAll(SourceStore.list().map { it.id }.toSet())
         writeCache(CacheFile(System.currentTimeMillis(), entries))
 
-        val rows = ChannelListBuilder.build(sources, resolveChannels(sources, entries))
+        val rows = ChannelListBuilder.build(sources, resolveChannels(sources, entries), logos)
         RefreshResult(rows, statuses)
     }
 
