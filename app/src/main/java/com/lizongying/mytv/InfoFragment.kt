@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv.databinding.InfoBinding
-import com.lizongying.mytv.models.TVViewModel
+import com.lizongying.mytv.models.ChannelItem
 
 class InfoFragment : Fragment() {
     private var _binding: InfoBinding? = null
@@ -29,8 +29,8 @@ class InfoFragment : Fragment() {
         return binding.root
     }
 
-    fun show(tvViewModel: TVViewModel) {
-        val tv = tvViewModel.getTV()
+    fun show(channelItem: ChannelItem) {
+        val tv = channelItem.getTV()
         binding.textView.text = tv.title
 
         baseDesc = listOf(tv.channel, tv.sourceName)

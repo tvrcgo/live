@@ -16,8 +16,8 @@ import androidx.leanback.widget.Row
 import androidx.leanback.widget.RowPresenter
 import androidx.lifecycle.lifecycleScope
 import com.lizongying.mytv.models.ChannelGroup
-import com.lizongying.mytv.models.TVListViewModel
-import com.lizongying.mytv.models.TVViewModel
+import com.lizongying.mytv.models.ChannelItem
+import com.lizongying.mytv.models.ChannelList
 import com.lizongying.mytv.source.ChannelListBuilder
 import com.lizongying.mytv.source.SourceRepository
 import com.lizongying.mytv.source.SourceStore
@@ -29,12 +29,10 @@ class MainFragment : BrowseSupportFragment() {
 
     private var rowsAdapter: ArrayObjectAdapter? = null
 
-    var tvListViewModel = TVListViewModel()
+    private var channelList = ChannelList()
 
     var lastStatuses: List<SourceRepository.SourceStatus> = emptyList()
         private set
-
-    private var lastVideoUrl = ""
 
     private var playingKey: String? = null
 
@@ -80,24 +78,22 @@ class MainFragment : BrowseSupportFragment() {
             return
         }
 
-        val previousKey = tvListViewModel.getTVViewModel(itemPosition)?.getTV()?.let { keyOf(it) }
-        releaseObservers()
+        val previousKey = channelList.get(itemPosition)?.getTV()?.let { keyOf(it) }
 
         rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
-        tvListViewModel = TVListViewModel()
+        channelList = ChannelList()
         val cardPresenter = CardPresenter(requireContext())
 
         var idx: Long = 0
         for ((k, v) in list) {
             val listRowAdapter = ArrayObjectAdapter(cardPresenter)
             for ((idx2, v1) in v.withIndex()) {
-                val tvViewModel = TVViewModel(v1)
-                tvViewModel.setRowPosition(idx.toInt())
-                tvViewModel.setItemPosition(idx2)
-                tvListViewModel.addTVViewModel(tvViewModel)
-                listRowAdapter.add(tvViewModel)
+                val channelItem = ChannelItem(v1)
+                channelItem.rowPosition = idx.toInt()
+                channelItem.itemPosition = idx2
+                channelList.add(channelItem)
+                listRowAdapter.add(channelItem)
             }
-            tvListViewModel.maxNum.add(v.size)
             rowsAdapter!!.add(ListRow(HeaderItem(idx, k), listRowAdapter))
             idx++
         }
@@ -109,22 +105,21 @@ class MainFragment : BrowseSupportFragment() {
         itemPosition = if (restored >= 0) {
             restored
         } else {
-            SP.itemPosition.coerceIn(0, (tvListViewModel.size() - 1).coerceAtLeast(0))
+            SP.itemPosition.coerceIn(0, (channelList.size() - 1).coerceAtLeast(0))
         }
-        tvListViewModel.setItemPosition(itemPosition)
+        channelList.setCurrent(itemPosition)
 
         val playing = playingKey
         if (playing != null && indexOf(playing) < 0) {
             playingKey = null
             (activity as? MainActivity)?.stopPlay()
         } else if (playingKey == null
-            && tvListViewModel.size() > 0
+            && channelList.size() > 0
             && (activity as? MainActivity)?.isReady() == true
         ) {
-            tvListViewModel.getTVViewModel(itemPosition)?.changed()
+            channelList.get(itemPosition)?.let { selectChannel(it) }
         }
 
-        observeAll()
         (activity as? MainActivity)?.showEmpty(emptyMessage(list))
         (activity as? MainActivity)?.onChannelsRebound()
     }
@@ -142,34 +137,18 @@ class MainFragment : BrowseSupportFragment() {
         }
     }
 
-    private fun observeAll() {
-        tvListViewModel.tvListViewModel.value?.forEach { tvViewModel ->
-            observe(tvViewModel)
+    private fun selectChannel(channelItem: ChannelItem) {
+        val title = channelItem.getTV().title
+        Log.i(TAG, "switch $title")
+        if (check(channelItem)) {
+            playingKey = keyOf(channelItem.getTV())
+            (activity as? MainActivity)?.play(channelItem)
+            (activity as? MainActivity)?.showInfoFragment(channelItem)
         }
-    }
-
-    private fun observe(tvViewModel: TVViewModel) {
-        tvViewModel.change.observe(viewLifecycleOwner) { _ ->
-            if (tvViewModel.change.value != null) {
-                val title = tvViewModel.getTV().title
-                Log.i(TAG, "switch $title")
-                if (check(tvViewModel)) {
-                    playingKey = keyOf(tvViewModel.getTV())
-                    (activity as? MainActivity)?.play(tvViewModel)
-                    (activity as? MainActivity)?.showInfoFragment(tvViewModel)
-                }
-                setSelectedPosition(
-                    tvViewModel.getRowPosition(), true,
-                    SelectItemViewHolderTask(tvViewModel.getItemPosition())
-                )
-            }
-        }
-    }
-
-    private fun releaseObservers() {
-        tvListViewModel.tvListViewModel.value?.forEach { tvViewModel ->
-            tvViewModel.change.removeObservers(viewLifecycleOwner)
-        }
+        setSelectedPosition(
+            channelItem.rowPosition, true,
+            SelectItemViewHolderTask(channelItem.itemPosition)
+        )
     }
 
     private fun keyOf(tv: TV): String {
@@ -177,8 +156,8 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private fun indexOf(key: String): Int {
-        for (i in 0 until tvListViewModel.size()) {
-            val tv = tvListViewModel.getTVViewModel(i)?.getTV() ?: continue
+        for (i in 0 until channelList.size()) {
+            val tv = channelList.get(i)?.getTV() ?: continue
             if (keyOf(tv) == key) {
                 return i
             }
@@ -209,11 +188,11 @@ class MainFragment : BrowseSupportFragment() {
             rowViewHolder: RowPresenter.ViewHolder,
             row: Row
         ) {
-            if (item is TVViewModel) {
+            if (item is ChannelItem) {
                 if (itemPosition != item.getTV().id) {
                     itemPosition = item.getTV().id
-                    tvListViewModel.setItemPosition(itemPosition)
-                    tvListViewModel.getTVViewModel(itemPosition)?.changed()
+                    channelList.setCurrent(itemPosition)
+                    channelList.get(itemPosition)?.let { selectChannel(it) }
                 }
                 (activity as? MainActivity)?.switchMainFragment()
             }
@@ -225,23 +204,17 @@ class MainFragment : BrowseSupportFragment() {
             itemViewHolder: Presenter.ViewHolder?, item: Any?,
             rowViewHolder: RowPresenter.ViewHolder, row: Row
         ) {
-            if (item is TVViewModel) {
-                tvListViewModel.setItemPositionCurrent(item.getTV().id)
+            if (item is ChannelItem) {
+                channelList.setCurrent(item.getTV().id)
                 (activity as MainActivity).mainActive()
             }
         }
     }
 
-    fun check(tvViewModel: TVViewModel): Boolean {
-        val title = tvViewModel.getTV().title
-        val videoUrl = tvViewModel.videoIndex.value?.let { tvViewModel.videoUrl.value?.get(it) }
-        if (videoUrl == null || videoUrl == "") {
+    fun check(channelItem: ChannelItem): Boolean {
+        val title = channelItem.getTV().title
+        if (channelItem.currentUrl().isEmpty()) {
             Log.e(TAG, "$title videoUrl is empty")
-            return false
-        }
-
-        if (videoUrl == lastVideoUrl) {
-            Log.e(TAG, "$title videoUrl is duplication")
             return false
         }
 
@@ -249,24 +222,24 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     fun fragmentReady() {
-        if (tvListViewModel.size() == 0) {
+        if (channelList.size() == 0) {
             return
         }
-        tvListViewModel.getTVViewModel(itemPosition)?.changed()
+        channelList.get(itemPosition)?.let { selectChannel(it) }
     }
 
     fun channelGroups(): List<ChannelGroup> =
         rows.map { (title, channels) -> ChannelGroup(title, channels) }
 
     fun currentTVId(): Int =
-        tvListViewModel.getTVViewModel(itemPosition)?.getTV()?.id ?: -1
+        channelList.get(itemPosition)?.getTV()?.id ?: -1
 
     fun play(itemPosition: Int) {
         view?.post {
-            if (itemPosition > -1 && itemPosition < tvListViewModel.size()) {
+            if (itemPosition > -1 && itemPosition < channelList.size()) {
                 this.itemPosition = itemPosition
-                tvListViewModel.setItemPosition(itemPosition)
-                tvListViewModel.getTVViewModel(itemPosition)?.changed()
+                channelList.setCurrent(itemPosition)
+                channelList.get(itemPosition)?.let { selectChannel(it) }
             } else {
                 Toast.makeText(context, "频道不存在", Toast.LENGTH_SHORT).show()
             }
@@ -275,29 +248,29 @@ class MainFragment : BrowseSupportFragment() {
 
     fun prev() {
         view?.post {
-            if (tvListViewModel.size() == 0) {
+            if (channelList.size() == 0) {
                 return@post
             }
             itemPosition--
             if (itemPosition == -1) {
-                itemPosition = tvListViewModel.size() - 1
+                itemPosition = channelList.size() - 1
             }
-            tvListViewModel.setItemPosition(itemPosition)
-            tvListViewModel.getTVViewModel(itemPosition)?.changed()
+            channelList.setCurrent(itemPosition)
+            channelList.get(itemPosition)?.let { selectChannel(it) }
         }
     }
 
     fun next() {
         view?.post {
-            if (tvListViewModel.size() == 0) {
+            if (channelList.size() == 0) {
                 return@post
             }
             itemPosition++
-            if (itemPosition == tvListViewModel.size()) {
+            if (itemPosition == channelList.size()) {
                 itemPosition = 0
             }
-            tvListViewModel.setItemPosition(itemPosition)
-            tvListViewModel.getTVViewModel(itemPosition)?.changed()
+            channelList.setCurrent(itemPosition)
+            channelList.get(itemPosition)?.let { selectChannel(it) }
         }
     }
 

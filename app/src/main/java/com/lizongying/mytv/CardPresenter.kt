@@ -8,7 +8,7 @@ import android.widget.ImageView
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
-import com.lizongying.mytv.models.TVViewModel
+import com.lizongying.mytv.models.ChannelItem
 
 class CardPresenter(
     private val context: Context,
@@ -24,16 +24,15 @@ class CardPresenter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any?) {
-        val tvViewModel = item as TVViewModel
+        val channelItem = item as ChannelItem
         val cardView = viewHolder.view as ImageCardView
 
-        cardView.titleText = tvViewModel.getTV().title
+        cardView.titleText = channelItem.getTV().title
         cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
-        cardView.tag = tvViewModel.videoUrl.value
 
         cardView.mainImageView?.let {
             Glide.with(viewHolder.view.context)
-                .load(tvViewModel.getTV().logo)
+                .load(channelItem.getTV().logo)
                 .centerInside()
                 .into(it)
         }
@@ -55,7 +54,7 @@ class CardPresenter(
 //            }
 //        }
 
-        cardView.contentText = tvViewModel.getTV().sourceName
+        cardView.contentText = channelItem.getTV().sourceName
     }
 
     override fun onUnbindViewHolder(viewHolder: ViewHolder) {

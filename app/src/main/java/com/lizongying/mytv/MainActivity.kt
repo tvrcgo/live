@@ -16,7 +16,7 @@ import android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
-import com.lizongying.mytv.models.TVViewModel
+import com.lizongying.mytv.models.ChannelItem
 import com.lizongying.mytv.source.SourceRepository
 import com.lizongying.mytv.source.SourceFragment
 
@@ -94,10 +94,10 @@ class MainActivity : FragmentActivity() {
 
     }
 
-    fun showInfoFragment(tvViewModel: TVViewModel) {
-        infoFragment.show(tvViewModel)
+    fun showInfoFragment(channelItem: ChannelItem) {
+        infoFragment.show(channelItem)
         if (SP.channelNum) {
-            channelFragment.show(tvViewModel)
+            channelFragment.show(channelItem)
         }
     }
 
@@ -155,8 +155,8 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    fun play(tvViewModel: TVViewModel) {
-        playerFragment.play(tvViewModel)
+    fun play(channelItem: ChannelItem) {
+        playerFragment.play(channelItem)
         if (!mainFragment.isHidden) {
             mainFragment.view?.requestFocus()
         }

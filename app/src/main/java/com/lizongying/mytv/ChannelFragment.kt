@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv.databinding.ChannelBinding
-import com.lizongying.mytv.models.TVViewModel
+import com.lizongying.mytv.models.ChannelItem
 
 class ChannelFragment : Fragment() {
     private var _binding: ChannelBinding? = null
@@ -61,10 +61,10 @@ class ChannelFragment : Fragment() {
         return binding.root
     }
 
-    fun show(tvViewModel: TVViewModel) {
+    fun show(channelItem: ChannelItem) {
         handler.removeCallbacks(hideRunnable)
         handler.removeCallbacks(playRunnable)
-        binding.channelContent.text = (tvViewModel.getTV().id.plus(1)).toString()
+        binding.channelContent.text = (channelItem.getTV().id.plus(1)).toString()
         view?.visibility = View.VISIBLE
         handler.postDelayed(hideRunnable, delay)
     }
