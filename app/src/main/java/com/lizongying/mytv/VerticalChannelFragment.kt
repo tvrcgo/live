@@ -69,7 +69,7 @@ class VerticalChannelFragment : Fragment() {
                     position: Int,
                     subposition: Int,
                 ) {
-                    if (position >= 0) {
+                    if (parent.hasFocus() && position >= 0) {
                         selectedChannel = position
                     }
                 }
@@ -84,15 +84,19 @@ class VerticalChannelFragment : Fragment() {
         if (groups.isEmpty()) return
         this.groups = groups
         this.currentId = currentId
-        activeGroup = ChannelSelection.initialGroupIndex(groups, currentId)
-        selectedChannel = ChannelSelection.channelIndexForGroup(groups[activeGroup], currentId)
+        val groupIndex = ChannelSelection.initialGroupIndex(groups, currentId)
+        activeGroup = groupIndex
+        val channelIndex = ChannelSelection.channelIndexForGroup(groups[groupIndex], currentId)
+        selectedChannel = channelIndex
 
-        groupAdapter.submit(groups, activeGroup)
-        channelAdapter.submit(groups[activeGroup].channels, currentId)
-        binding.root.post {
-            binding.groupGrid.setSelectedPosition(activeGroup)
-            focusChannelRow(selectedChannel)
-        }
+        // 清除隐藏期间残留的焦点，避免残留选中派发劫持本次定位、焦点闪动
+        binding.root.clearFocus()
+        groupAdapter.submit(groups, groupIndex)
+        channelAdapter.submit(groups[groupIndex].channels, currentId)
+        // 必须在首个布局遍历前同步设置目标位置：post 会被 vsync 同步屏障
+        // 推迟到首次布局之后，残留位置的布局派发会先于定位执行
+        binding.groupGrid.setSelectedPosition(groupIndex)
+        focusChannelRow(channelIndex)
     }
 
     // 确定性定位：task 在布局完成、滚动到位后才执行，消除时序竞态
