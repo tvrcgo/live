@@ -6,6 +6,7 @@
     <string name="channel_layout_horizontal">横向</string>
     <string name="channel_layout_vertical">竖向</string>
     <string name="title_boot_startup">开机自启</string>
+    <string name="hint_boot_startup_disabled">Android 12+ 系统限制，不可用</string>
     <string name="title_time">显示时间</string>
 
     <string name="vertical_playing">播放中</string>

@@ -1,5 +1,6 @@
 package com.lizongying.mytv
 
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -50,9 +51,15 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
 
         binding.switchBootStartup.run {
             isChecked = SP.bootStartup
-            setOnCheckedChangeListener { _, isChecked ->
-                SP.bootStartup = isChecked
-                (activity as MainActivity).settingDelayHide()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                isEnabled = false
+                binding.titleBootStartup.alpha = 0.5f
+                binding.hintBootStartup.visibility = View.VISIBLE
+            } else {
+                setOnCheckedChangeListener { _, isChecked ->
+                    SP.bootStartup = isChecked
+                    (activity as MainActivity).settingDelayHide()
+                }
             }
         }
 
