@@ -13,7 +13,7 @@ object SP {
     // If use channel num to select channel or not
     private const val KEY_CHANNEL_NUM = "channel_num"
 
-    // Channel list layout: horizontal (default) or vertical
+    // Channel list layout: vertical (default) or horizontal
     private const val KEY_CHANNEL_LAYOUT = "channel_layout"
     const val LAYOUT_HORIZONTAL = "horizontal"
     const val LAYOUT_VERTICAL = "vertical"
@@ -52,8 +52,8 @@ object SP {
         set(value) = sp.edit().putBoolean(KEY_CHANNEL_NUM, value).apply()
 
     var channelLayout: String
-        get() = sp.getString(KEY_CHANNEL_LAYOUT, LAYOUT_HORIZONTAL)
-            ?.takeIf { it == LAYOUT_VERTICAL } ?: LAYOUT_HORIZONTAL
+        get() = sp.getString(KEY_CHANNEL_LAYOUT, LAYOUT_VERTICAL)
+            ?.takeIf { it == LAYOUT_HORIZONTAL } ?: LAYOUT_VERTICAL
         set(value) = sp.edit().putString(KEY_CHANNEL_LAYOUT, value).apply()
 
     var time: Boolean

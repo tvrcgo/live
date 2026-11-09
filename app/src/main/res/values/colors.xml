@@ -4,16 +4,15 @@
     <color name="black">#000</color>
     <color name="white">#FFF</color>
 
-    <color name="channel_scrim">#3D000000</color>
-    <color name="channel_group_panel">#94000000</color>
-    <color name="channel_list_panel">#75000000</color>
+    <color name="channel_scrim">#B3000000</color>
+    <color name="channel_group_panel">#B3000000</color>
+    <color name="channel_list_panel">#B3000000</color>
     <color name="channel_text">#F6F8F8</color>
     <color name="channel_text_dim">#708083</color>
     <color name="channel_group_name">#C4CCCE</color>
     <color name="channel_badge">#FF9FB0</color>
     <color name="channel_number">#768285</color>
     <color name="channel_sel_sub">#FFD9DE</color>
-    <color name="channel_selected">#262D2F</color>
     <color name="card_background">#262D2F</color>
     <color name="channel_divider">#4A5254</color>
     <color name="channel_segment_border">#78868A</color>

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.leanback.widget.OnChildViewHolderSelectedListener
+import androidx.leanback.widget.ViewHolderTask
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.lizongying.mytv.databinding.FragmentVerticalChannelsBinding
@@ -54,13 +55,6 @@ class VerticalChannelFragment : Fragment() {
             })
             setOnFocusChangeListener { _, hasFocus ->
                 binding.channelGrid.alpha = if (hasFocus) 0.6f else 1f
-                if (hasFocus) {
-                    binding.channelGrid.post {
-                        channelAdapter.highlight = true
-                        channelAdapter.notifyDataSetChanged()
-                        binding.channelGrid.setSelectedPosition(selectedChannel)
-                    }
-                }
             }
         }
 
@@ -77,19 +71,9 @@ class VerticalChannelFragment : Fragment() {
                 ) {
                     if (position >= 0) {
                         selectedChannel = position
-                        channelAdapter.selected = position
                     }
                 }
             })
-            setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    channelAdapter.highlight = false
-                    binding.channelGrid
-                        .findViewHolderForAdapterPosition(selectedChannel)
-                        ?.itemView
-                        ?.let { it.isSelected = false }
-                }
-            }
         }
 
         return binding.root
@@ -104,12 +88,20 @@ class VerticalChannelFragment : Fragment() {
         selectedChannel = ChannelSelection.channelIndexForGroup(groups[activeGroup], currentId)
 
         groupAdapter.submit(groups, activeGroup)
-        channelAdapter.submit(groups[activeGroup].channels, currentId, selectedChannel)
+        channelAdapter.submit(groups[activeGroup].channels, currentId)
         binding.root.post {
             binding.groupGrid.setSelectedPosition(activeGroup)
-            binding.channelGrid.setSelectedPosition(selectedChannel)
-            binding.channelGrid.requestFocus()
+            focusChannelRow(selectedChannel)
         }
+    }
+
+    // 确定性定位：task 在布局完成、滚动到位后才执行，消除时序竞态
+    private fun focusChannelRow(position: Int) {
+        binding.channelGrid.setSelectedPosition(position, object : ViewHolderTask {
+            override fun run(holder: RecyclerView.ViewHolder) {
+                holder.itemView.requestFocus()
+            }
+        })
     }
 
     private fun onGroupSelected(index: Int) {
@@ -122,14 +114,16 @@ class VerticalChannelFragment : Fragment() {
         groupAdapter.setActive(index)
         binding.groupGrid.post { groupAdapter.notifyDataSetChanged() }
         binding.channelGrid.post {
-            channelAdapter.submit(group.channels, current, channelIndex)
+            channelAdapter.submit(group.channels, current)
+            // 焦点仍在分类栏，仅滚动预定位；setSelectedPosition 在 pending 更新时
+            // 由布局完成后的对齐逻辑保证滚动到位
             binding.channelGrid.setSelectedPosition(channelIndex)
         }
     }
 
     private fun onGroupClicked(index: Int) {
         onGroupSelected(index)
-        binding.channelGrid.requestFocus()
+        focusChannelRow(selectedChannel)
     }
 
     private fun playSelected() {
@@ -180,7 +174,7 @@ class VerticalChannelFragment : Fragment() {
             KeyEvent.KEYCODE_DPAD_RIGHT,
             KeyEvent.KEYCODE_DPAD_CENTER,
             KeyEvent.KEYCODE_ENTER -> {
-                if (event.action == KeyEvent.ACTION_DOWN) binding.channelGrid.requestFocus()
+                if (event.action == KeyEvent.ACTION_DOWN) focusChannelRow(selectedChannel)
                 true
             }
 
@@ -248,13 +242,9 @@ class VerticalChannelFragment : Fragment() {
         private var items: List<TV> = emptyList()
         private var currentId = -1
 
-        var selected = 0
-        var highlight = false
-
-        fun submit(channels: List<TV>, currentId: Int, selected: Int) {
+        fun submit(channels: List<TV>, currentId: Int) {
             items = channels
             this.currentId = currentId
-            this.selected = selected
             notifyDataSetChanged()
         }
 
@@ -290,7 +280,6 @@ class VerticalChannelFragment : Fragment() {
             holder.binding.indicator.isVisible = playing
             holder.binding.playingDot.isVisible = playing
             holder.binding.playing.isVisible = playing
-            holder.itemView.isSelected = highlight && position == selected
             holder.itemView.setOnClickListener { onClick(tv) }
         }
 

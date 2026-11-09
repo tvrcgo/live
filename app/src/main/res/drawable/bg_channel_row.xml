@@ -5,11 +5,6 @@
             <solid android:color="@color/focus" />
         </shape>
     </item>
-    <item android:state_selected="true">
-        <shape>
-            <solid android:color="@color/channel_selected" />
-        </shape>
-    </item>
     <item>
         <shape>
             <solid android:color="@android:color/transparent" />
