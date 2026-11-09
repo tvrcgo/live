@@ -133,8 +133,9 @@ class VerticalChannelFragment : Fragment() {
         activeGroup = index
         selectedChannel = ChannelSelection.channelIndexForGroup(groups[index], currentId)
         groupAdapter.setActive(index)
-        // 只重绑发生变化的旧行，替代全表 notifyDataSetChanged 的整表重绑开销
-        binding.groupGrid.post { groupAdapter.notifyItemRangeChanged(previous, 2) }
+        // 同步精准刷新确切的旧行与新行：post 会引入连续移动时的范围错位竞态
+        groupAdapter.notifyItemChanged(previous)
+        groupAdapter.notifyItemChanged(index)
         // 去抖：焦点快速掠过中间分类时不重建频道列表，停顿后预览最终分类
         pendingGroup = index
         listHandler.removeCallbacks(pendingListUpdate)
