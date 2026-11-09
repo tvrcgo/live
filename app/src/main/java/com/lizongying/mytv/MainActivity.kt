@@ -382,6 +382,17 @@ class MainActivity : FragmentActivity() {
             return
         }
 
+        // 弹窗逐级返回：直播源管理 → 设置页 → 退出
+        if (sourceFragment.isVisible) {
+            sourceFragment.dismiss()
+            return
+        }
+
+        if (settingFragment.isVisible) {
+            settingFragment.dismiss()
+            return
+        }
+
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed()
             return
@@ -397,7 +408,10 @@ class MainActivity : FragmentActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         Log.i(TAG, "keyCode $keyCode, event $event")
-        if (sourceFragment.isVisible) {
+        // 直播源管理页只响应返回键（逐级返回），其余按键不落到主界面
+        if (sourceFragment.isVisible && keyCode != KeyEvent.KEYCODE_BACK
+            && keyCode != KeyEvent.KEYCODE_ESCAPE
+        ) {
             return super.onKeyDown(keyCode, event)
         }
         when (keyCode) {
