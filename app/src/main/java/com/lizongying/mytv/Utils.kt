@@ -1,7 +1,6 @@
 package com.lizongying.mytv
 
 import android.content.res.Resources
-import android.os.Build
 import android.util.TypedValue
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -39,6 +38,4 @@ object Utils {
         val scale = Resources.getSystem().displayMetrics.density
         return (px / scale).toInt()
     }
-
-    fun isTmallDevice() = Build.MANUFACTURER.equals("Tmall", ignoreCase = true)
 }

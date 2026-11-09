@@ -6,8 +6,6 @@ import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.SurfaceHolder
-import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -28,26 +26,17 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
-import com.google.android.exoplayer2.DefaultLoadControl as LegacyLoadControl
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.Player as LegacyPlayer
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.video.VideoListener
 import com.lizongying.mytv.databinding.PlayerBinding
-import com.lizongying.mytv.models.TVViewModel
+import com.lizongying.mytv.models.ChannelItem
 
 
-class PlayerFragment : Fragment(), SurfaceHolder.Callback {
+class PlayerFragment : Fragment() {
 
     private var _binding: PlayerBinding? = null
     private var playerView: PlayerView? = null
-    private var tvViewModel: TVViewModel? = null
+    private var channelItem: ChannelItem? = null
     private val aspectRatio = 16f / 9f
 
-
-    private lateinit var surfaceView: SurfaceView
-    private lateinit var surfaceHolder: SurfaceHolder
-    private var exoPlayer: SimpleExoPlayer? = null
     private var pendingUrl: String? = null
 
     private val handler = Handler(Looper.getMainLooper())
@@ -57,7 +46,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
     private var lastNetworkRetryAt = 0L
 
     private val retry = Runnable {
-        tvViewModel?.let { play(it) }
+        channelItem?.let { play(it) }
     }
 
     override fun onCreateView(
@@ -65,16 +54,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         savedInstanceState: Bundle?
     ): View {
         _binding = PlayerBinding.inflate(inflater, container, false)
-
-        if (Utils.isTmallDevice()) {
-            _binding!!.playerView.visibility = View.GONE
-            surfaceView = _binding!!.surfaceView
-            surfaceHolder = surfaceView.holder
-            surfaceHolder.addCallback(this)
-        } else {
-            _binding!!.surfaceView.visibility = View.GONE
-            playerView = _binding!!.playerView
-        }
+        playerView = _binding!!.playerView
 
         playerView?.viewTreeObserver?.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
@@ -137,9 +117,9 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
     }
 
     @OptIn(UnstableApi::class)
-    fun play(tvViewModel: TVViewModel) {
-        this.tvViewModel = tvViewModel
-        val url = tvViewModel.getVideoUrlCurrent()
+    fun play(channelItem: ChannelItem) {
+        this.channelItem = channelItem
+        val url = channelItem.currentUrl()
         handler.removeCallbacks(retry)
         if (url != retryUrl) {
             retryUrl = url
@@ -155,15 +135,10 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         } else if (playerView != null) {
             pendingUrl = url
         }
-        exoPlayer?.run {
-            setMediaItem(com.google.android.exoplayer2.MediaItem.fromUri(url))
-            prepare()
-        }
     }
 
     fun stop() {
         playerView?.player?.stop()
-        exoPlayer?.stop()
     }
 
     fun onNetworkAvailable() {
@@ -176,7 +151,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         }
         lastNetworkRetryAt = now
         retryCount = 0
-        tvViewModel?.let { play(it) }
+        channelItem?.let { play(it) }
     }
 
     override fun onStart() {
@@ -186,11 +161,6 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
             Log.i(TAG, "replay")
             playerView!!.player?.prepare()
             playerView!!.player?.play()
-        }
-        if (exoPlayer?.isPlaying == false) {
-            Log.i(TAG, "replay")
-            exoPlayer?.prepare()
-            exoPlayer?.play()
         }
     }
 
@@ -205,9 +175,6 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         if (playerView != null && playerView!!.player?.isPlaying == true) {
             playerView!!.player?.stop()
         }
-        if (exoPlayer?.isPlaying == true) {
-            exoPlayer?.stop()
-        }
     }
 
     override fun onDestroy() {
@@ -216,7 +183,6 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         if (playerView != null) {
             playerView!!.player?.release()
         }
-        exoPlayer?.release()
     }
 
     override fun onDestroyView() {
@@ -343,21 +309,8 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
             .build()
     }
 
-    private fun legacyLoadControl(): LegacyLoadControl {
-        return LegacyLoadControl.Builder()
-            .setBufferDurationsMs(
-                MIN_BUFFER_MS,
-                MAX_BUFFER_MS,
-                BUFFER_FOR_PLAYBACK_MS,
-                BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS,
-            )
-            .setTargetBufferBytes(TARGET_BUFFER_BYTES)
-            .setPrioritizeTimeOverSizeThresholds(true)
-            .build()
-    }
-
     companion object {
-        private const val TAG = "PlaybackVideoFragment"
+        private const val TAG = "PlayerFragment"
 
         private const val MIN_BUFFER_MS = 4_000
         private const val MAX_BUFFER_MS = 20_000
@@ -368,35 +321,5 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         private const val CONNECT_TIMEOUT_MS = 8_000
         private const val READ_TIMEOUT_MS = 15_000
         private const val NETWORK_RETRY_THROTTLE_MS = 3_000
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        exoPlayer = SimpleExoPlayer.Builder(requireContext())
-            .setLoadControl(legacyLoadControl())
-            .build()
-        exoPlayer?.setVideoSurfaceHolder(surfaceHolder)
-        exoPlayer?.playWhenReady = true
-        exoPlayer?.addVideoListener(object : VideoListener {
-            override fun onRenderedFirstFrame() {
-                hideBlackScreen()
-            }
-        })
-        exoPlayer?.addListener(object : LegacyPlayer.EventListener {
-            override fun onPlayerError(error: ExoPlaybackException) {
-                Log.e(TAG, "LegacyPlaybackException $error")
-                val message = if (error.type == ExoPlaybackException.TYPE_RENDERER) {
-                    getString(R.string.play_failed_decode)
-                } else {
-                    getString(R.string.play_failed_network)
-                }
-                showPlayError(message)
-            }
-        })
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
     }
 }
