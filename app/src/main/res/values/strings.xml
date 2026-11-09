@@ -31,4 +31,6 @@
     <string name="empty_loading">正在加载直播源…</string>
     <string name="empty_load_failed">直播源加载失败，请检查网络或源地址</string>
     <string name="empty_go_settings">去设置</string>
+
+    <string name="play_failed">当前频道无法播放\n按上下键切换频道，或检查直播源</string>
 </resources>
