@@ -28,6 +28,16 @@
         android:textColor="@color/channel_number_color"
         android:textSize="@dimen/channel_number_size" />
 
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="@dimen/channel_logo_width"
+        android:layout_height="@dimen/channel_logo_height"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@null"
+        android:duplicateParentState="true"
+        android:scaleType="centerInside" />
+
     <TextView
         android:id="@+id/name"
         android:layout_width="0dp"

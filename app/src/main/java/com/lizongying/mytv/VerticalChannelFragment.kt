@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.leanback.widget.OnChildViewHolderSelectedListener
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.lizongying.mytv.databinding.FragmentVerticalChannelsBinding
 import com.lizongying.mytv.databinding.ItemChannelBinding
 import com.lizongying.mytv.databinding.ItemChannelGroupBinding
@@ -274,6 +275,18 @@ class VerticalChannelFragment : Fragment() {
             holder.binding.number.text =
                 holder.itemView.context.getString(R.string.vertical_channel_number, tv.id + 1)
             holder.binding.name.text = tv.title
+            holder.binding.logo.setImageDrawable(null)
+            if (tv.logo.isNotEmpty()) {
+                val context = holder.itemView.context
+                Glide.with(context)
+                    .load(tv.logo)
+                    .override(
+                        context.resources.getDimensionPixelSize(R.dimen.channel_logo_width),
+                        context.resources.getDimensionPixelSize(R.dimen.channel_logo_height),
+                    )
+                    .centerInside()
+                    .into(holder.binding.logo)
+            }
             holder.binding.indicator.isVisible = playing
             holder.binding.playingDot.isVisible = playing
             holder.binding.playing.isVisible = playing

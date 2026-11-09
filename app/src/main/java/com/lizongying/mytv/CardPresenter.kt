@@ -1,7 +1,6 @@
 package com.lizongying.mytv
 
 import android.content.Context
-import android.graphics.Color
 import android.view.ContextThemeWrapper
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -37,7 +36,7 @@ class CardPresenter(
                 .into(it)
         }
 
-        cardView.setBackgroundColor(Color.WHITE)
+        cardView.setBackgroundColor(context.getColor(R.color.card_background))
         cardView.setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
 
 //        cardView.setOnFocusChangeListener { v, hasFocus ->

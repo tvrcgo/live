@@ -14,6 +14,7 @@
     <color name="channel_number">#768285</color>
     <color name="channel_sel_sub">#FFD9DE</color>
     <color name="channel_selected">#262D2F</color>
+    <color name="card_background">#262D2F</color>
     <color name="channel_divider">#4A5254</color>
     <color name="channel_segment_border">#78868A</color>
     <color name="channel_segment_text_dim">#AAB4B7</color>
