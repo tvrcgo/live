@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.leanback.widget.BaseGridView
 import androidx.leanback.widget.OnChildViewHolderSelectedListener
 import androidx.leanback.widget.ViewHolderTask
 import androidx.recyclerview.widget.RecyclerView
@@ -49,10 +48,8 @@ class VerticalChannelFragment : Fragment() {
         binding.groupGrid.apply {
             setNumColumns(1)
             adapter = groupAdapter
-            // 关闭换数据动画：active 变更整表重绑，动画只增加开销
+            // 关闭换数据动画：整表重绑时动画只增加开销
             itemAnimator = null
-            // DPAD 连续移动的平滑滚动减速，滚动更柔
-            setSmoothScrollSpeedFactor(SMOOTH_SCROLL_FACTOR)
             setOnKeyInterceptListener { onGroupKey(it) }
             addOnChildViewHolderSelectedListener(object : OnChildViewHolderSelectedListener() {
                 override fun onChildViewHolderSelected(
@@ -76,10 +73,6 @@ class VerticalChannelFragment : Fragment() {
             adapter = channelAdapter
             // 关闭换数据动画：预览重建是整表置换，change 动画在低端电视上拖慢焦点移动
             itemAnimator = null
-            // 焦点行到达边缘才滚动一行，滚动距离小而连续，避免跳变重对齐
-            setFocusScrollStrategy(BaseGridView.FOCUS_SCROLL_ITEM)
-            // DPAD 连续移动的平滑滚动减速，滚动更柔
-            setSmoothScrollSpeedFactor(SMOOTH_SCROLL_FACTOR)
             setOnKeyInterceptListener { onChannelKey(it) }
             addOnChildViewHolderSelectedListener(object : OnChildViewHolderSelectedListener() {
                 override fun onChildViewHolderSelected(
@@ -132,15 +125,16 @@ class VerticalChannelFragment : Fragment() {
 
     companion object {
         private const val LIST_UPDATE_DELAY_MILLIS = 80L
-        private const val SMOOTH_SCROLL_FACTOR = 2f
     }
 
     private fun onGroupSelected(index: Int) {
         if (index !in groups.indices || index == activeGroup) return
+        val previous = activeGroup
         activeGroup = index
         selectedChannel = ChannelSelection.channelIndexForGroup(groups[index], currentId)
         groupAdapter.setActive(index)
-        binding.groupGrid.post { groupAdapter.notifyDataSetChanged() }
+        // 只重绑发生变化的旧行，替代全表 notifyDataSetChanged 的整表重绑开销
+        binding.groupGrid.post { groupAdapter.notifyItemRangeChanged(previous, 2) }
         // 去抖：焦点快速掠过中间分类时不重建频道列表，停顿后预览最终分类
         pendingGroup = index
         listHandler.removeCallbacks(pendingListUpdate)
