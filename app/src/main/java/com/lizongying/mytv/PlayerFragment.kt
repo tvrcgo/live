@@ -49,12 +49,15 @@ class PlayerFragment : Fragment() {
         channelItem?.let { play(it) }
     }
 
+    @OptIn(UnstableApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = PlayerBinding.inflate(inflater, container, false)
         playerView = _binding!!.playerView
+        // 字幕层兜底隐藏：即使流内字幕/DVB 图文轨被选中也不渲染画面角标
+        playerView?.subtitleView?.visibility = View.GONE
 
         playerView?.viewTreeObserver?.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
