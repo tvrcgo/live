@@ -1,12 +1,16 @@
 <resources>
 
-    <style name="Theme.MyTV" parent="@style/Theme.AppCompat.Leanback">
+    <style name="Theme.MyTV" parent="@style/Theme.MaterialComponents.LeanbackBridge">
         <item name="browsePaddingStart">11dp</item>
         <item name="browsePaddingEnd">11dp</item>
         <item name="browseRowsMarginTop">54dp</item>
         <item name="android:colorAccent">@color/focus</item>
-        <!-- SwitchCompat 轨道激活色 -->
+        <!-- SwitchCompat 轨道激活色 / Material 组件主题色 -->
         <item name="android:colorControlActivated">@color/focus</item>
+        <item name="colorPrimary">@color/focus</item>
+        <item name="colorSecondary">@color/focus</item>
+        <item name="colorControlActivated">@color/focus</item>
+        <item name="colorOnPrimary">@color/white</item>
     </style>
 
     <style name="FlatButton" parent="@android:style/Widget.Button">
