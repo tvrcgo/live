@@ -54,10 +54,16 @@
                 android:tint="@color/setting_chevron_text" />
         </LinearLayout>
 
+        <!-- 整行聚焦：确认键即开关，开关纯显示 -->
         <LinearLayout
+            android:id="@+id/row_channel_reversal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
             android:orientation="horizontal"
@@ -75,13 +81,20 @@
             <Switch
                 android:id="@+id/switch_channel_reversal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/row_channel_num"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
             android:orientation="horizontal"
@@ -99,13 +112,21 @@
             <Switch
                 android:id="@+id/switch_channel_num"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false" />
         </LinearLayout>
 
+        <!-- 整行聚焦：确认/左右键切换选项，分段控件纯显示 -->
         <LinearLayout
+            android:id="@+id/row_channel_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
             android:orientation="horizontal"
@@ -125,9 +146,9 @@
                 android:layout_width="@dimen/channel_segment_width"
                 android:layout_height="@dimen/channel_segment_height"
                 android:background="@drawable/bg_layout_segment_group"
+                android:clickable="false"
                 android:descendantFocusability="blocksDescendants"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
+                android:focusable="false"
                 android:orientation="horizontal"
                 android:padding="2dp">
 
@@ -165,9 +186,14 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/row_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
             android:orientation="horizontal"
@@ -185,13 +211,20 @@
             <Switch
                 android:id="@+id/switch_time"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/row_boot_startup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
             android:minHeight="44dp"
             android:orientation="horizontal"
@@ -226,7 +259,9 @@
             <Switch
                 android:id="@+id/switch_boot_startup"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false" />
         </LinearLayout>
 
         <LinearLayout
