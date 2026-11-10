@@ -5,6 +5,9 @@
         <item name="browsePaddingEnd">11dp</item>
         <item name="browseRowsMarginTop">54dp</item>
         <item name="android:colorAccent">@color/focus</item>
+        <!-- Material 组件着色（SwitchMaterial 轨道激活色跟随） -->
+        <item name="colorPrimary">@color/focus</item>
+        <item name="colorSecondary">@color/focus</item>
     </style>
 
     <style name="FlatButton" parent="@android:style/Widget.Button">

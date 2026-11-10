@@ -49,7 +49,7 @@
     </LinearLayout>
 
     <!-- 纯显示开关：行是唯一焦点单元，左右键切换启用 -->
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/item_enabled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

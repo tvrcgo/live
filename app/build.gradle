@@ -113,6 +113,9 @@ dependencies {
     implementation "com.google.code.gson:gson:2.10.1"
 
     implementation 'androidx.leanback:leanback:1.2.0-alpha04'
+
+    // Google TV 规范开关样式（Material SwitchCompat），设置页与直播源行共用
+    implementation 'com.google.android.material:material:1.11.0'
     
     implementation 'com.github.bumptech.glide:glide:4.11.0'
 
