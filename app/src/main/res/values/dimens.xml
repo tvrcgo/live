@@ -16,5 +16,5 @@
     <dimen name="setting_row_height">56dp</dimen>
     <!-- 直播源管理页行高（名称+URL/状态两行文字） -->
     <dimen name="source_row_height">68dp</dimen>
-    <dimen name="source_add_margin_top">12dp</dimen>
+    <dimen name="source_add_margin_top">6dp</dimen>
 </resources>
