@@ -91,7 +91,7 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_channel_reversal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_channel_num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -209,7 +209,7 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -257,7 +257,7 @@
                     android:visibility="gone" />
             </LinearLayout>
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_boot_startup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
