@@ -87,12 +87,13 @@ class SourceFragment : FlatDialogFragment(0.6f, 0.9f) {
             container.addView(item.root)
         }
 
-        // 列表末尾固定「＋ 添加直播源」虚线行
+        // 列表末尾固定「＋ 添加直播源」行，与源行同款样式
         val addRow = TextView(requireContext())
         addRow.text = getString(R.string.source_add)
-        addRow.setTextColor(0xFF8FD3B5.toInt())
         addRow.textSize = 16f
-        addRow.setBackgroundResource(R.drawable.bg_source_add_row)
+        // 与源行同款（leanback GuidedActionItemContainer：行生而平等，不加按钮隐喻）
+        addRow.setBackgroundResource(R.drawable.bg_setting_row)
+        addRow.setTextColor(0xFFEEEEEE.toInt())
         addRow.gravity = Gravity.CENTER_VERTICAL
         addRow.minHeight = resources.getDimensionPixelSize(R.dimen.source_row_height)
         addRow.setPadding(
