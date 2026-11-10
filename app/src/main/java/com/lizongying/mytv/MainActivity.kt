@@ -265,7 +265,7 @@ class MainActivity : FragmentActivity() {
         return networkReady > 0 && fragmentReadyCount >= READY_FRAGMENTS
     }
 
-    private fun showTime() {
+    fun showTime() {
         Log.i(TAG, "showTime ${SP.time}")
         if (SP.time) {
             timeFragment.show()

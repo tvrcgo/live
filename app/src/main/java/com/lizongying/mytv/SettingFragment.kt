@@ -46,6 +46,8 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             isChecked = SP.time
             setOnCheckedChangeListener { _, isChecked ->
                 SP.time = isChecked
+                // 开关即时生效：时间浮层随 SP 显隐（原 settingDelayHide 副作用链已删）
+                (activity as? MainActivity)?.showTime()
             }
         }
 
@@ -72,6 +74,8 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             row.setOnClickListener {
                 if (switch.isEnabled) {
                     switch.toggle()
+                    // SwitchCompat track 着色首刷有时序滞后，强制跳到当前态
+                    switch.jumpDrawablesToCurrentState()
                 }
             }
         }
