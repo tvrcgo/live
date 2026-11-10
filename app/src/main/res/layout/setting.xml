@@ -6,10 +6,14 @@
     android:background="@color/flat_panel"
     >
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:orientation="vertical"
         android:paddingTop="20dp"
         android:paddingBottom="20dp">
@@ -294,4 +298,5 @@
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
+    </ScrollView>
 </FrameLayout>

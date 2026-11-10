@@ -30,7 +30,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             isChecked = SP.channelReversal
             setOnCheckedChangeListener { _, isChecked ->
                 SP.channelReversal = isChecked
-                (activity as MainActivity).settingDelayHide()
             }
         }
 
@@ -38,7 +37,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             isChecked = SP.channelNum
             setOnCheckedChangeListener { _, isChecked ->
                 SP.channelNum = isChecked
-                (activity as MainActivity).settingDelayHide()
             }
         }
 
@@ -48,7 +46,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             isChecked = SP.time
             setOnCheckedChangeListener { _, isChecked ->
                 SP.time = isChecked
-                (activity as MainActivity).settingDelayHide()
             }
         }
 
@@ -61,8 +58,7 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             } else {
                 setOnCheckedChangeListener { _, isChecked ->
                     SP.bootStartup = isChecked
-                    (activity as MainActivity).settingDelayHide()
-                }
+                    }
             }
         }
 
@@ -103,15 +99,13 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
                 KeyEvent.KEYCODE_DPAD_LEFT -> {
                     SP.channelLayout = SP.LAYOUT_HORIZONTAL
                     render()
-                    (activity as MainActivity).settingDelayHide()
-                    true
+                        true
                 }
 
                 KeyEvent.KEYCODE_DPAD_RIGHT -> {
                     SP.channelLayout = SP.LAYOUT_VERTICAL
                     render()
-                    (activity as MainActivity).settingDelayHide()
-                    true
+                        true
                 }
 
                 KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
@@ -120,8 +114,7 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
                         if (SP.channelLayout == SP.LAYOUT_HORIZONTAL) SP.LAYOUT_VERTICAL
                         else SP.LAYOUT_HORIZONTAL
                     render()
-                    (activity as MainActivity).settingDelayHide()
-                    true
+                        true
                 }
 
                 else -> false
@@ -179,7 +172,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
 
                 else -> Unit
             }
-            (activity as MainActivity).settingDelayHide()
         }
     }
 
