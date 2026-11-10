@@ -12,17 +12,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/setting_row_padding_h"
-        android:paddingEnd="@dimen/setting_row_padding_h"
-        android:paddingTop="20dp"
-        android:paddingBottom="12dp"
-        android:text="@string/title_settings"
-        android:textColor="#FFEEEEEE"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/setting_row_padding_h"
+            android:paddingEnd="@dimen/setting_row_padding_h"
+            android:text="@string/title_settings"
+            android:textColor="#FFEEEEEE"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- 标题与滚动区分隔线：主题粉 60% 通栏，上下留白对称 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/focus_soft" />
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
