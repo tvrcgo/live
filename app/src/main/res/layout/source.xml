@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- 标题区：与设置页同款（对称 12dp + 柔和主题粉通栏分隔线），tip 计入标题区 -->
+        <!-- 标题区：与设置页同款（对称 12dp + 柔和主题粉通栏分隔线） -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,16 +26,6 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="20sp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:paddingStart="@dimen/setting_row_padding_h"
-                android:paddingEnd="@dimen/setting_row_padding_h"
-                android:text="@string/source_tip"
-                android:textColor="#B3EEEEEE"
-                android:textSize="13sp" />
 
             <!-- 标题与滚动区分隔线：主题粉 60% 通栏 -->
             <View
