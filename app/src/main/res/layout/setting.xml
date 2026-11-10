@@ -154,48 +154,36 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <LinearLayout
-                android:id="@+id/channel_layout"
-                android:layout_width="@dimen/channel_segment_width"
-                android:layout_height="@dimen/channel_segment_height"
-                android:background="@drawable/bg_layout_segment_group"
-                android:clickable="false"
-                android:descendantFocusability="blocksDescendants"
-                android:focusable="false"
-                android:orientation="horizontal"
-                android:padding="2dp">
+            <!-- leanback ListPreference 同款：当前值 + 左右指示，行内左右键切换 -->
+            <ImageView
+                android:id="@+id/channel_layout_left"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:duplicateParentState="true"
+                android:src="@drawable/ic_chevron_left"
+                android:tint="@color/setting_chevron_text" />
 
-                <TextView
-                    android:id="@+id/channel_layout_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_layout_segment_item"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:text="@string/channel_layout_horizontal"
-                    android:textColor="@color/layout_segment_text"
-                    android:textSize="@dimen/channel_segment_text" />
+            <TextView
+                android:id="@+id/channel_layout_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:minWidth="40dp"
+                android:duplicateParentState="true"
+                android:gravity="center"
+                android:textColor="#FFEEEEEE"
+                android:textSize="15sp" />
 
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/channel_divider" />
-
-                <TextView
-                    android:id="@+id/channel_layout_vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_layout_segment_item"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:text="@string/channel_layout_vertical"
-                    android:textColor="@color/layout_segment_text"
-                    android:textSize="@dimen/channel_segment_text" />
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/channel_layout_right"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:duplicateParentState="true"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/setting_chevron_text" />
         </LinearLayout>
 
         <LinearLayout

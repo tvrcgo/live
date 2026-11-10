@@ -85,9 +85,15 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
     }
 
     private fun bindChannelLayout() {
+        // leanback ListPreference 同款：值文字 + 左右 chevron，随 SP 渲染
         fun render() {
-            binding.channelLayoutHorizontal.isSelected = SP.channelLayout == SP.LAYOUT_HORIZONTAL
-            binding.channelLayoutVertical.isSelected = SP.channelLayout == SP.LAYOUT_VERTICAL
+            binding.channelLayoutValue.setText(
+                if (SP.channelLayout == SP.LAYOUT_HORIZONTAL) {
+                    R.string.channel_layout_horizontal
+                } else {
+                    R.string.channel_layout_vertical
+                }
+            )
         }
 
         // 整行聚焦：按键处理挂行上，左右/确认切换选项

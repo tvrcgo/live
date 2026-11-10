@@ -16,7 +16,6 @@
     <color name="card_background">#262D2F</color>
     <color name="channel_divider">#4A5254</color>
     <color name="channel_segment_border">#78868A</color>
-    <color name="channel_segment_text_dim">#AAB4B7</color>
     <!-- flat 弹窗窗口（独立 Dialog 层）在电视上会被压亮，90% 黑补偿后观感≈同窗口 65% 黑 -->
     <color name="flat_dialog_panel">#E6000000</color>
     <color name="flat_panel">@color/flat_dialog_panel</color>
