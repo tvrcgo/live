@@ -81,11 +81,8 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
         }
 
         binding.sourceEntry.setOnClickListener {
-            (activity as? MainActivity)?.let { activity ->
-                dismissAllowingStateLoss()
-                activity.supportFragmentManager.executePendingTransactions()
-                activity.openSources()
-            }
+            // 不销毁设置页：二级弹窗层叠覆盖，返回键 dismiss 后逐级回到设置页
+            (activity as? MainActivity)?.openSources()
         }
 
         return binding.root

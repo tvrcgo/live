@@ -32,7 +32,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -65,7 +65,7 @@
             android:descendantFocusability="blocksDescendants"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -96,7 +96,7 @@
             android:descendantFocusability="blocksDescendants"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -128,7 +128,7 @@
             android:descendantFocusability="blocksDescendants"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -195,7 +195,7 @@
             android:descendantFocusability="blocksDescendants"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -226,7 +226,7 @@
             android:descendantFocusability="blocksDescendants"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -273,7 +273,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
