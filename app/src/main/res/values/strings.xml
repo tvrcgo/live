@@ -1,10 +1,50 @@
 <resources>
-    <string name="app_name">我的电视</string>
+    <string name="app_name">LIVE</string>
     <string name="title_channel_reversal">换台反转</string>
     <string name="title_channel_num">换台时显示频道号</string>
-    <string name="check_version">检查更新</string>
+    <string name="title_channel_layout">换台交互</string>
+    <string name="channel_layout_horizontal">横向</string>
+    <string name="channel_layout_vertical">竖向</string>
     <string name="title_boot_startup">开机自启</string>
-    <string name="dismiss_error">好的</string>
+    <string name="hint_boot_startup_disabled">Android 12+ 系统限制，不可用</string>
     <string name="title_time">显示时间</string>
-    <string name="exit">退出</string>
+
+    <string name="vertical_playing">播放中</string>
+    <string name="vertical_channel_number">%1$03d</string>
+
+    <string name="title_sources">直播源</string>
+    <string name="source_tip">添加 m3u 地址，启用后在启动时合并成一个频道列表</string>
+    <string name="source_add">＋ 添加直播源</string>
+    <string name="source_refresh">刷新全部</string>
+    <string name="source_edit">编辑直播源</string>
+    <string name="source_delete">删除</string>
+    <string name="source_delete_confirm_title">删除直播源</string>
+    <string name="source_delete_confirm_msg">删除后不可恢复：%1$s</string>
+    <string name="source_enabled">启用</string>
+    <string name="source_name_hint">名称（可留空，默认取域名）</string>
+    <string name="source_url_hint">m3u 地址（http:// 或 https://）</string>
+    <string name="source_ok">确定</string>
+    <string name="source_cancel">取消</string>
+    <string name="source_empty">还没有添加直播源</string>
+    <string name="source_status_unknown">未刷新</string>
+    <string name="source_status_ok">成功 %1$d 个频道</string>
+    <string name="source_status_fail">失败：%1$s（缓存 %2$d 个）</string>
+
+    <string name="empty_no_source">还没有配置直播源\n按遥控器右键 → 直播源 → 添加 m3u 地址</string>
+    <string name="empty_loading">正在加载直播源…</string>
+    <string name="empty_load_failed">直播源加载失败，请检查网络或源地址</string>
+    <string name="empty_go_settings">去设置</string>
+
+    <string name="play_failed">当前频道无法播放\n按上下键切换频道，或检查直播源</string>
+    <string name="play_failed_network">网络连接失败或超时\n请检查网络连接，或换台再试</string>
+    <string name="play_failed_http">直播源返回错误\n源可能已失效，请刷新直播源</string>
+    <string name="play_failed_format">无法识别该频道的格式\n可能不是直播流，或需要更换播放地址</string>
+    <string name="play_failed_decode">设备无法解码该频道\n可换台，或更换编码更常见的直播源</string>
+
+    <string name="title_version">版本</string>
+    <string name="update_current_version">v%1$s</string>
+    <string name="update_check_failed">检查失败</string>
+    <string name="update_new_version">新版本 v%1$s</string>
+    <string name="update_downloading">下载中 %1$d%%</string>
+    <string name="update_download_failed">下载失败</string>
 </resources>

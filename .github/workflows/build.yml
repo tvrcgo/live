@@ -1,82 +1,105 @@
-name: build
+name: release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Run build with Gradle wrapper
-        run: ./gradlew assembleRelease -PIS_SO_BUILD=false
-
-      - name: Sign app APK
-        id: sign_app
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          alias: ${{ secrets.ALIAS }}
-          signingKeyBase64: ${{ secrets.KEYSTORE }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ALIAS_PASSWORD }}
+      - name: Check signing secrets
         env:
-          # override default build-tools version (29.0.3) -- optional
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Get History
-        id: get_history
+          KEYSTORE: ${{ secrets.KEYSTORE }}
         run: |
-          chmod +x history.sh
-          output=$(./history.sh)
-          echo "$output" > history.md
+          if [ -z "$KEYSTORE" ]; then
+            echo "::error::缺少签名 secrets：KEYSTORE / KEYSTORE_PASSWORD / ALIAS / ALIAS_PASSWORD"
+            exit 1
+          fi
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-          body_path: history.md
+      - name: Unit test
+        run: ./gradlew testDebugUnitTest -PbuildNumber=${{ github.run_number }}
 
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          asset_name: my-tv-${{ github.ref_name }}.apk
-          asset_content_type: application/vnd.android.package-archive
+      - name: Assemble release
+        run: ./gradlew assembleRelease -PbuildNumber=${{ github.run_number }}
 
-      - name: Gitee Create Release
+      - name: Resolve version
+        id: version
         run: |
-          latest_commit=$(git rev-parse HEAD)
-          history=$(cat history.md)
-          curl -v POST https://gitee.com/api/v5/repos/${{ github.repository }}/releases \
-          -H "Content-Type: application/json" \
-          -d '{
-            "access_token": "${{ secrets.GITEE_ACCESS_TOKEN}}",
-            "tag_name": "${{ github.ref_name }}",
-            "name": "Release ${{ github.ref_name }}",
-            "body": "'"$history"'",
-            "prerelease": false,
-            "target_commitish": "'"$latest_commit"'"
-          }'
+          VERSION=$(python3 -c "import json;print(json.load(open('app/build/outputs/apk/release/output-metadata.json'))['elements'][0]['versionName'])")
+          echo "name=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "versionName=$VERSION"
+
+      - name: Sign and verify APK
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE }}
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.ALIAS_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS }}
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          APKSIGNER=$(ls -d "$SDK"/build-tools/*/apksigner | sort -V | tail -1)
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          UNSIGNED=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          mkdir -p dist
+          OUT="dist/live-${{ steps.version.outputs.name }}.apk"
+          "$APKSIGNER" sign \
+            --ks "$RUNNER_TEMP/release.jks" \
+            --ks-pass env:KS_PASS \
+            --ks-key-alias "$KEY_ALIAS" \
+            --key-pass env:KEY_PASS \
+            --out "$OUT" "$UNSIGNED"
+          "$APKSIGNER" verify --print-certs "$OUT"
+          rm -f "$RUNNER_TEMP/release.jks"
+          ls -l dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: live-${{ steps.version.outputs.name }}
+          path: dist/live-${{ steps.version.outputs.name }}.apk
+          overwrite: true
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ steps.version.outputs.name }}"
+          ASSET="dist/live-${{ steps.version.outputs.name }}.apk"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release $TAG 已存在，覆盖其中的 APK"
+            gh release upload "$TAG" "$ASSET" --clobber
+          else
+            gh release create "$TAG" "$ASSET" \
+              --title "live ${{ steps.version.outputs.name }}" \
+              --notes "自动构建 $(date -u '+%Y-%m-%d %H:%M:%S') UTC，提交 ${{ github.sha }}" \
+              --target "${{ github.sha }}"
+          fi
+
+      - name: Gitee Create Release (optional)
+        continue-on-error: true
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$GITEE_TOKEN" ]; then
+            echo "未配置 GITEE_ACCESS_TOKEN，跳过 Gitee 发布"
+            exit 0
+          fi
+          SHA=$(git rev-parse HEAD)
+          curl -sS -X POST "https://gitee.com/api/v5/repos/${{ github.repository }}/releases?access_token=$GITEE_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"tag_name\":\"v${{ steps.version.outputs.name }}\",\"name\":\"live ${{ steps.version.outputs.name }}\",\"prerelease\":false,\"target_commitish\":\"$SHA\"}"

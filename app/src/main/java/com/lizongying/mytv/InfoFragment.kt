@@ -2,14 +2,12 @@ package com.lizongying.mytv
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.lizongying.mytv.databinding.InfoBinding
-import com.lizongying.mytv.models.TVViewModel
+import com.lizongying.mytv.models.ChannelItem
 
 class InfoFragment : Fragment() {
     private var _binding: InfoBinding? = null
@@ -17,6 +15,9 @@ class InfoFragment : Fragment() {
 
     private val handler = Handler()
     private val delay: Long = 3000
+
+    private var baseDesc = ""
+    private var playbackInfo = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,24 +29,35 @@ class InfoFragment : Fragment() {
         return binding.root
     }
 
-    fun show(tvViewModel: TVViewModel) {
-        binding.textView.text = tvViewModel.getTV().title
+    fun show(channelItem: ChannelItem) {
+        val tv = channelItem.getTV()
+        binding.textView.text = tv.title
 
-        Glide.with(this)
-            .load(tvViewModel.getTV().logo)
-            .into(binding.infoLogo)
-
-        Log.i(TAG, "${tvViewModel.getTV().title} ${tvViewModel.epg.value}")
-        val epg = tvViewModel.epg.value?.filter { it.beginTime < Utils.getDateTimestamp() }
-        if (!epg.isNullOrEmpty()) {
-            binding.infoDesc.text = epg.last().title
-        } else {
-            binding.infoDesc.text = ""
-        }
+        baseDesc = listOf(tv.channel, tv.sourceName)
+            .filter { it.isNotEmpty() }
+            .joinToString(" · ")
+        playbackInfo = ""
+        render()
 
         handler.removeCallbacks(removeRunnable)
         view?.visibility = View.VISIBLE
         handler.postDelayed(removeRunnable, delay)
+    }
+
+    fun updatePlaybackInfo(text: String) {
+        playbackInfo = text
+        if (_binding == null || view?.visibility != View.VISIBLE) {
+            return
+        }
+        render()
+        handler.removeCallbacks(removeRunnable)
+        handler.postDelayed(removeRunnable, delay)
+    }
+
+    private fun render() {
+        binding.infoDesc.text = listOf(baseDesc, playbackInfo)
+            .filter { it.isNotEmpty() }
+            .joinToString(" · ")
     }
 
     override fun onResume() {
@@ -65,9 +77,5 @@ class InfoFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val TAG = "InfoFragment"
     }
 }

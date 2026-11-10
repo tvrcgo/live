@@ -1,7 +1,34 @@
 <resources>
-    <color name="focus">#0096a6</color>
+    <color name="focus">#E42C68</color>
     <color name="fastlane_background">#30000000</color>
     <color name="black">#000</color>
     <color name="white">#FFF</color>
-    <color name="ic_launcher_background">#223239</color>
+
+    <color name="channel_scrim">#A6000000</color>
+    <color name="channel_group_panel">#A6000000</color>
+    <color name="channel_list_panel">#A6000000</color>
+    <color name="channel_text">#F6F8F8</color>
+    <color name="channel_text_dim">#708083</color>
+    <color name="channel_group_name">#C4CCCE</color>
+    <color name="channel_badge">#FF9FB0</color>
+    <color name="channel_number">#768285</color>
+    <color name="channel_sel_sub">#FFD9DE</color>
+    <color name="card_background">#262D2F</color>
+    <color name="channel_divider">#4A5254</color>
+    <color name="channel_segment_border">#78868A</color>
+    <color name="channel_segment_text_dim">#AAB4B7</color>
+    <!-- flat 弹窗窗口（独立 Dialog 层）在电视上会被压亮，90% 黑补偿后观感≈同窗口 65% 黑 -->
+    <color name="flat_dialog_panel">#E6000000</color>
+    <color name="flat_panel">@color/flat_dialog_panel</color>
+    <!-- 模态输入弹窗（直播源编辑）：不透底，避免与下层弹窗透叠 -->
+    <color name="flat_edit_panel">#F0000000</color>
+    <!-- 编辑页输入框聚焦下划线 / 保存按钮底色 -->
+    <color name="source_field_focus">#2E8B57</color>
+    <color name="source_ok_button">#2E8B57</color>
+    <color name="info_panel">#F2000000</color>
+    <color name="flat_row">#12FFFFFF</color>
+    <color name="play_error_text">#FFEEEEEE</color>
+
+    <color name="version_text">#B3EEEEEE</color>
+    <color name="version_highlight">#6C9CFF</color>
 </resources>

@@ -13,6 +13,11 @@ object SP {
     // If use channel num to select channel or not
     private const val KEY_CHANNEL_NUM = "channel_num"
 
+    // Channel list layout: vertical (default) or horizontal
+    private const val KEY_CHANNEL_LAYOUT = "channel_layout"
+    const val LAYOUT_HORIZONTAL = "horizontal"
+    const val LAYOUT_VERTICAL = "vertical"
+
     private const val KEY_TIME = "time"
 
     // If start app on device boot or not
@@ -23,8 +28,11 @@ object SP {
     // Position in list of the selected channel item
     private const val KEY_POSITION = "position"
 
-    // guid
-    private const val KEY_GUID = "guid"
+    // Live sources in json
+    private const val KEY_SOURCES = "sources"
+
+    // Probed CDN host for channel logos
+    private const val KEY_LOGO_HOST = "logo_host"
 
     private lateinit var sp: SharedPreferences
 
@@ -43,8 +51,13 @@ object SP {
         get() = sp.getBoolean(KEY_CHANNEL_NUM, true)
         set(value) = sp.edit().putBoolean(KEY_CHANNEL_NUM, value).apply()
 
+    var channelLayout: String
+        get() = sp.getString(KEY_CHANNEL_LAYOUT, LAYOUT_VERTICAL)
+            ?.takeIf { it == LAYOUT_HORIZONTAL } ?: LAYOUT_VERTICAL
+        set(value) = sp.edit().putString(KEY_CHANNEL_LAYOUT, value).apply()
+
     var time: Boolean
-        get() = sp.getBoolean(KEY_TIME, true)
+        get() = sp.getBoolean(KEY_TIME, false)
         set(value) = sp.edit().putBoolean(KEY_TIME, value).apply()
 
     var bootStartup: Boolean
@@ -59,7 +72,11 @@ object SP {
         get() = sp.getInt(KEY_POSITION, 0)
         set(value) = sp.edit().putInt(KEY_POSITION, value).apply()
 
-    var guid: String
-        get() = sp.getString(KEY_GUID, "") ?: ""
-        set(value) = sp.edit().putString(KEY_GUID, value).apply()
+    var sources: String
+        get() = sp.getString(KEY_SOURCES, "[]") ?: "[]"
+        set(value) = sp.edit().putString(KEY_SOURCES, value).apply()
+
+    var logoHost: String
+        get() = sp.getString(KEY_LOGO_HOST, "") ?: ""
+        set(value) = sp.edit().putString(KEY_LOGO_HOST, value).apply()
 }

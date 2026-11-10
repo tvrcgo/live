@@ -1,14 +1,13 @@
 package com.lizongying.mytv
 
 import android.content.Context
-import android.graphics.Color
 import android.view.ContextThemeWrapper
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
-import com.lizongying.mytv.models.TVViewModel
+import com.lizongying.mytv.models.ChannelItem
 
 class CardPresenter(
     private val context: Context,
@@ -24,21 +23,20 @@ class CardPresenter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any?) {
-        val tvViewModel = item as TVViewModel
+        val channelItem = item as ChannelItem
         val cardView = viewHolder.view as ImageCardView
 
-        cardView.titleText = tvViewModel.getTV().title
+        cardView.titleText = channelItem.getTV().title
         cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
-        cardView.tag = tvViewModel.videoUrl.value
 
         cardView.mainImageView?.let {
             Glide.with(viewHolder.view.context)
-                .load(tvViewModel.getTV().logo)
+                .load(channelItem.getTV().logo)
                 .centerInside()
                 .into(it)
         }
 
-        cardView.setBackgroundColor(Color.WHITE)
+        cardView.setBackgroundColor(context.getColor(R.color.card_background))
         cardView.setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
 
 //        cardView.setOnFocusChangeListener { v, hasFocus ->
@@ -55,12 +53,7 @@ class CardPresenter(
 //            }
 //        }
 
-        val epg = tvViewModel.epg.value?.filter { it.beginTime < Utils.getDateTimestamp() }
-        if (!epg.isNullOrEmpty()) {
-            cardView.contentText = epg.last().title
-        } else {
-            cardView.contentText = ""
-        }
+        cardView.contentText = channelItem.getTV().sourceName
     }
 
     override fun onUnbindViewHolder(viewHolder: ViewHolder) {
