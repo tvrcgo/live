@@ -1,8 +1,8 @@
 <resources>
-    <dimen name="channel_row_height">44dp</dimen>
+    <dimen name="channel_row_height">52dp</dimen>
     <dimen name="channel_rail_width">180dp</dimen>
-    <dimen name="channel_logo_width">36dp</dimen>
-    <dimen name="channel_logo_height">20dp</dimen>
+    <dimen name="channel_logo_width">50dp</dimen>
+    <dimen name="channel_logo_height">28dp</dimen>
     <dimen name="channel_content_padding">24dp</dimen>
     <dimen name="channel_indicator_width">3dp</dimen>
     <dimen name="channel_indicator_height">22dp</dimen>
