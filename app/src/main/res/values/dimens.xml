@@ -15,6 +15,6 @@
     <!-- 设置页条目行高（Google TV 电视版 listPreferredItemHeight 常规值） -->
     <dimen name="setting_row_height">56dp</dimen>
     <!-- 直播源管理页行高（名称+URL/状态两行文字） -->
-    <dimen name="source_row_height">56dp</dimen>
+    <dimen name="source_row_height">68dp</dimen>
     <dimen name="source_add_margin_top">12dp</dimen>
 </resources>
