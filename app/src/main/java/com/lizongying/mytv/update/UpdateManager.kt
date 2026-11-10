@@ -22,9 +22,6 @@ object UpdateManager {
         "https://github.com/tvrcgo/live/releases/latest"
     private const val EXPANDED_ASSETS_URL =
         "https://github.com/tvrcgo/live/releases/expanded_assets/"
-    private const val TAG_URL_PREFIX = "/releases/tag/"
-    private const val APK_URL_PREFIX = "/releases/download/"
-    private const val APK_NAME_PREFIX = "live-"
     // GitHub 对非浏览器 UA 返回无关页面，HTML 通道必须用浏览器式 UA
     private const val HTTP_USER_AGENT =
         "Mozilla/5.0 (Linux; Android 9) AppleWebKit/537.36"
@@ -57,6 +54,8 @@ object UpdateManager {
         .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .build()
+    // OkHttp 默认跟随重定向，会把 releases/latest 的 302 吃掉，取 tag 必须关掉
+    private val probeClient = client.newBuilder().followRedirects(false).build()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val mainHandler = Handler(Looper.getMainLooper())
     private var downloadJob: Job? = null
@@ -127,33 +126,24 @@ object UpdateManager {
 
     // 走 HTML 页面通道：github.com/releases/latest 302 响应头带最新 tag，
     // expanded_assets 页面含资产链接；api.github.com 匿名限流 60 次/IP/小时会持续失败
-    // 下载 URL 结构：/releases/download/<tag>/<live-版本号.apk>，tag 段需通配
-    private val apkUrlPattern =
-        Regex("$APK_URL_PREFIX[^\"'<]+/$APK_NAME_PREFIX[^\"'<]+\\.apk")
-
     private fun fetchLatest(): RemoteVersion? {
         val tag = fetchLatestTag() ?: return null
         val assetsHtml = fetchBody(EXPANDED_ASSETS_URL + tag) ?: return null
-        val url = apkUrlPattern.find(assetsHtml)?.value ?: return null
-        return RemoteVersion(tag, "https://github.com$url")
+        val apkUrl = ReleasePage.apkUrl(assetsHtml) ?: return null
+        return RemoteVersion(tag.removePrefix("v"), apkUrl)
     }
 
     private fun fetchLatestTag(): String? {
-        // 不跟随重定向，直接读 302 的 Location 提取 tag
         val request = HttpRequest.Builder()
             .url(LATEST_RELEASE_URL)
             .header("User-Agent", HTTP_USER_AGENT)
             .build()
-        client.newCall(request).execute().use { response ->
+        probeClient.newCall(request).execute().use { response ->
             if (!response.isRedirect) {
                 return null
             }
             val location = response.header("Location") ?: return null
-            val index = location.lastIndexOf(TAG_URL_PREFIX)
-            if (index < 0) {
-                return null
-            }
-            return location.substring(index + TAG_URL_PREFIX.length).removePrefix("v")
+            return ReleasePage.tagFromRedirect(location)
         }
     }
 
