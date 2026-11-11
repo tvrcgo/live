@@ -28,8 +28,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
 
         binding.switchChannelReversal.run {
             isChecked = SP.channelReversal
-            // inflate 后首刷着色时序滞后：初始化即强制跳到当前态
-            jumpDrawablesToCurrentState()
             setOnCheckedChangeListener { _, isChecked ->
                 SP.channelReversal = isChecked
             }
@@ -37,7 +35,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
 
         binding.switchChannelNum.run {
             isChecked = SP.channelNum
-            jumpDrawablesToCurrentState()
             setOnCheckedChangeListener { _, isChecked ->
                 SP.channelNum = isChecked
             }
@@ -47,7 +44,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
 
         binding.switchTime.run {
             isChecked = SP.time
-            jumpDrawablesToCurrentState()
             setOnCheckedChangeListener { _, isChecked ->
                 SP.time = isChecked
                 // 开关即时生效：时间浮层随 SP 显隐（原 settingDelayHide 副作用链已删）
@@ -57,7 +53,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
 
         binding.switchBootStartup.run {
             isChecked = SP.bootStartup
-            jumpDrawablesToCurrentState()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 isEnabled = false
                 binding.titleBootStartup.alpha = 0.5f
@@ -79,8 +74,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             row.setOnClickListener {
                 if (switch.isEnabled) {
                     switch.toggle()
-                    // SwitchCompat track 着色首刷有时序滞后，强制跳到当前态
-                    switch.jumpDrawablesToCurrentState()
                 }
             }
         }

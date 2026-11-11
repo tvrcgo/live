@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -109,7 +110,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
-                android:focusable="false" />
+                android:focusable="false"
+                app:trackTint="@color/switch_track" />
         </LinearLayout>
 
         <LinearLayout
@@ -140,7 +142,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
-                android:focusable="false" />
+                android:focusable="false"
+                app:trackTint="@color/switch_track" />
         </LinearLayout>
 
         <!-- 整行聚焦：确认/左右键切换选项，分段控件纯显示 -->
@@ -227,7 +230,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
-                android:focusable="false" />
+                android:focusable="false"
+                app:trackTint="@color/switch_track" />
         </LinearLayout>
 
         <LinearLayout
@@ -275,7 +279,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
-                android:focusable="false" />
+                android:focusable="false"
+                app:trackTint="@color/switch_track" />
         </LinearLayout>
 
         <LinearLayout
