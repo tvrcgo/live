@@ -39,6 +39,12 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
     kotlinOptions {
         jvmTarget = 17
     }
@@ -113,6 +119,10 @@ dependencies {
     implementation "com.google.code.gson:gson:2.10.1"
 
     implementation 'androidx.leanback:leanback:1.2.0-alpha04'
+
+    // B 方案：MaterialComponents 主题桥（LeanbackBridge），Material 组件可用
+    implementation 'com.google.android.material:material:1.11.0'
+
     
     implementation 'com.github.bumptech.glide:glide:4.11.0'
 
@@ -122,4 +132,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC")
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.11.1'
+    testImplementation 'androidx.test:core:1.5.0'
 }

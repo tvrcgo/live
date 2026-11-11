@@ -4,7 +4,7 @@
         <item name="lbImageCardViewType">Title|Content</item>
     </style>
 
-    <style name="CustomImageCardTheme" parent="Theme.Leanback">
+    <style name="CustomImageCardTheme" parent="Theme.AppCompat.Leanback">
         <item name="imageCardViewStyle">@style/CustomImageCardViewStyle</item>
     </style>
 </resources>

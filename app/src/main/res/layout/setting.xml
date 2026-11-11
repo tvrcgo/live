@@ -1,38 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/flat_panel"
     >
 
+    <!-- 标题固定在滚动区外（leanback decor title），滚动只发生在列表区 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp">
+        android:paddingTop="12dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h"
-            android:text="@string/app_name"
+            android:text="@string/title_settings"
             android:textColor="#FFEEEEEE"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- 标题与滚动区分隔线：主题粉 60% 通栏，上下留白对称 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/focus_soft" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/source_entry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:background="@drawable/bg_setting_row"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -54,12 +81,18 @@
                 android:tint="@color/setting_chevron_text" />
         </LinearLayout>
 
+        <!-- 整行聚焦：确认键即开关，开关纯显示 -->
         <LinearLayout
+            android:id="@+id/row_channel_reversal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -72,18 +105,26 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <Switch
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_channel_reversal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                app:trackTint="@color/switch_track" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/row_channel_num"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -96,18 +137,27 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <Switch
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_channel_num"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                app:trackTint="@color/switch_track" />
         </LinearLayout>
 
+        <!-- 整行聚焦：确认/左右键切换选项，分段控件纯显示 -->
         <LinearLayout
+            android:id="@+id/row_channel_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -120,56 +170,49 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <LinearLayout
-                android:id="@+id/channel_layout"
-                android:layout_width="@dimen/channel_segment_width"
-                android:layout_height="@dimen/channel_segment_height"
-                android:background="@drawable/bg_layout_segment_group"
-                android:descendantFocusability="blocksDescendants"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:padding="2dp">
+            <!-- leanback ListPreference 同款：当前值 + 左右指示，行内左右键切换 -->
+            <ImageView
+                android:id="@+id/channel_layout_left"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:duplicateParentState="true"
+                android:src="@drawable/ic_chevron_left"
+                android:tint="@color/setting_chevron_text" />
 
-                <TextView
-                    android:id="@+id/channel_layout_horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_layout_segment_item"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:text="@string/channel_layout_horizontal"
-                    android:textColor="@color/layout_segment_text"
-                    android:textSize="@dimen/channel_segment_text" />
+            <TextView
+                android:id="@+id/channel_layout_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:minWidth="40dp"
+                android:duplicateParentState="true"
+                android:gravity="center"
+                android:textColor="#FFEEEEEE"
+                android:textSize="15sp" />
 
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/channel_divider" />
-
-                <TextView
-                    android:id="@+id/channel_layout_vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_layout_segment_item"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:text="@string/channel_layout_vertical"
-                    android:textColor="@color/layout_segment_text"
-                    android:textSize="@dimen/channel_segment_text" />
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/channel_layout_right"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:duplicateParentState="true"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/setting_chevron_text" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/row_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -182,18 +225,26 @@
                 android:textColor="#FFEEEEEE"
                 android:textSize="16sp" />
 
-            <Switch
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_time"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                app:trackTint="@color/switch_track" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/row_boot_startup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:background="@drawable/bg_setting_row"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants"
+            android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -223,10 +274,13 @@
                     android:visibility="gone" />
             </LinearLayout>
 
-            <Switch
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_boot_startup"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                app:trackTint="@color/switch_track" />
         </LinearLayout>
 
         <LinearLayout
@@ -238,7 +292,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical"
-            android:minHeight="44dp"
+            android:minHeight="@dimen/setting_row_height"
             android:orientation="horizontal"
             android:paddingStart="@dimen/setting_row_padding_h"
             android:paddingEnd="@dimen/setting_row_padding_h">
@@ -258,5 +312,7 @@
                 android:textColor="#B3EEEEEE"
                 android:textSize="14sp" />
         </LinearLayout>
+    </LinearLayout>
+    </ScrollView>
     </LinearLayout>
 </FrameLayout>

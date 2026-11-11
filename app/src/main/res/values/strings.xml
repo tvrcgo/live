@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">LIVE</string>
+    <string name="title_settings">设置</string>
     <string name="title_channel_reversal">换台反转</string>
     <string name="title_channel_num">换台时显示频道号</string>
     <string name="title_channel_layout">换台交互</string>
@@ -13,7 +14,6 @@
     <string name="vertical_channel_number">%1$03d</string>
 
     <string name="title_sources">直播源</string>
-    <string name="source_tip">添加 m3u 地址，启用后在启动时合并成一个频道列表</string>
     <string name="source_add">＋ 添加直播源</string>
     <string name="source_refresh">刷新全部</string>
     <string name="source_edit">编辑直播源</string>

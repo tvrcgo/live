@@ -44,7 +44,6 @@ class MainActivity : FragmentActivity() {
 
     private val handler = Handler()
     private val delayHideMain: Long = 10000
-    private val delayHideSetting: Long = 10000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate")
@@ -241,21 +240,6 @@ class MainActivity : FragmentActivity() {
         handler.postDelayed(hideMain, delayHideMain)
     }
 
-    fun settingDelayHide() {
-        handler.removeCallbacks(hideSetting)
-        handler.postDelayed(hideSetting, delayHideSetting)
-        showTime()
-    }
-
-    fun settingHideNow() {
-        handler.removeCallbacks(hideSetting)
-        handler.postDelayed(hideSetting, 0)
-    }
-
-    fun settingNeverHide() {
-        handler.removeCallbacks(hideSetting)
-    }
-
     private val hideMain = Runnable {
         hideChannelList()
     }
@@ -281,7 +265,7 @@ class MainActivity : FragmentActivity() {
         return networkReady > 0 && fragmentReadyCount >= READY_FRAGMENTS
     }
 
-    private fun showTime() {
+    fun showTime() {
         Log.i(TAG, "showTime ${SP.time}")
         if (SP.time) {
             timeFragment.show()
@@ -341,15 +325,7 @@ class MainActivity : FragmentActivity() {
         Log.i(TAG, "settingFragment ${settingFragment.isVisible}")
         if (!settingFragment.isVisible) {
             settingFragment.show(supportFragmentManager, "setting")
-            settingDelayHide()
         } else {
-            handler.removeCallbacks(hideSetting)
-            settingFragment.dismiss()
-        }
-    }
-
-    private val hideSetting = Runnable {
-        if (settingFragment.isVisible) {
             settingFragment.dismiss()
         }
     }

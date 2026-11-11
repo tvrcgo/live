@@ -30,7 +30,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             isChecked = SP.channelReversal
             setOnCheckedChangeListener { _, isChecked ->
                 SP.channelReversal = isChecked
-                (activity as MainActivity).settingDelayHide()
             }
         }
 
@@ -38,7 +37,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             isChecked = SP.channelNum
             setOnCheckedChangeListener { _, isChecked ->
                 SP.channelNum = isChecked
-                (activity as MainActivity).settingDelayHide()
             }
         }
 
@@ -48,7 +46,8 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             isChecked = SP.time
             setOnCheckedChangeListener { _, isChecked ->
                 SP.time = isChecked
-                (activity as MainActivity).settingDelayHide()
+                // 开关即时生效：时间浮层随 SP 显隐（原 settingDelayHide 副作用链已删）
+                (activity as? MainActivity)?.showTime()
             }
         }
 
@@ -61,29 +60,46 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
             } else {
                 setOnCheckedChangeListener { _, isChecked ->
                     SP.bootStartup = isChecked
-                    (activity as MainActivity).settingDelayHide()
+                    }
+            }
+        }
+
+        // 整行聚焦：确认键即开关（toggle 触发 listener 写 SP）；禁用态保持 no-op
+        listOf(
+            binding.rowChannelReversal to binding.switchChannelReversal,
+            binding.rowChannelNum to binding.switchChannelNum,
+            binding.rowTime to binding.switchTime,
+            binding.rowBootStartup to binding.switchBootStartup,
+        ).forEach { (row, switch) ->
+            row.setOnClickListener {
+                if (switch.isEnabled) {
+                    switch.toggle()
                 }
             }
         }
 
         binding.sourceEntry.setOnClickListener {
-            (activity as? MainActivity)?.let { activity ->
-                dismissAllowingStateLoss()
-                activity.supportFragmentManager.executePendingTransactions()
-                activity.openSources()
-            }
+            // 不销毁设置页：二级弹窗层叠覆盖，返回键 dismiss 后逐级回到设置页
+            (activity as? MainActivity)?.openSources()
         }
 
         return binding.root
     }
 
     private fun bindChannelLayout() {
+        // leanback ListPreference 同款：值文字 + 左右 chevron，随 SP 渲染
         fun render() {
-            binding.channelLayoutHorizontal.isSelected = SP.channelLayout == SP.LAYOUT_HORIZONTAL
-            binding.channelLayoutVertical.isSelected = SP.channelLayout == SP.LAYOUT_VERTICAL
+            binding.channelLayoutValue.setText(
+                if (SP.channelLayout == SP.LAYOUT_HORIZONTAL) {
+                    R.string.channel_layout_horizontal
+                } else {
+                    R.string.channel_layout_vertical
+                }
+            )
         }
 
-        binding.channelLayout.setOnKeyListener { _, keyCode, event ->
+        // 整行聚焦：按键处理挂行上，左右/确认切换选项
+        binding.rowChannelLayout.setOnKeyListener { _, keyCode, event ->
             if (event.action != KeyEvent.ACTION_DOWN) {
                 return@setOnKeyListener false
             }
@@ -91,18 +107,24 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
                 KeyEvent.KEYCODE_DPAD_LEFT -> {
                     SP.channelLayout = SP.LAYOUT_HORIZONTAL
                     render()
-                    (activity as MainActivity).settingDelayHide()
-                    true
+                        true
                 }
 
                 KeyEvent.KEYCODE_DPAD_RIGHT -> {
                     SP.channelLayout = SP.LAYOUT_VERTICAL
                     render()
-                    (activity as MainActivity).settingDelayHide()
-                    true
+                        true
                 }
 
-                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> true
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                    // 二选一场景：确认键切换到另一项
+                    SP.channelLayout =
+                        if (SP.channelLayout == SP.LAYOUT_HORIZONTAL) SP.LAYOUT_VERTICAL
+                        else SP.LAYOUT_HORIZONTAL
+                    render()
+                        true
+                }
+
                 else -> false
             }
         }
@@ -158,7 +180,6 @@ class SettingFragment : FlatDialogFragment(0.6f, 0.9f) {
 
                 else -> Unit
             }
-            (activity as MainActivity).settingDelayHide()
         }
     }
 
