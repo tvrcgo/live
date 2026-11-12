@@ -26,7 +26,8 @@
     <!-- 编辑页输入框聚焦下划线 / 保存按钮底色 -->
     <color name="source_field_focus">#2E8B57</color>
     <color name="source_ok_button">#2E8B57</color>
-    <color name="info_panel">#F2000000</color>
+    <!-- 信息条：换台时播放器会盖纯黑遮罩，底色不能贴黑，否则看不出面板区域 -->
+    <color name="info_panel">#D92C3336</color>
     <color name="flat_row">#12FFFFFF</color>
     <color name="play_error_text">#FFEEEEEE</color>
 
