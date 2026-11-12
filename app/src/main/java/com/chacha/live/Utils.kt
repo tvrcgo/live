@@ -1,0 +1,41 @@
+package com.chacha.live
+
+import android.content.res.Resources
+import android.util.TypedValue
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+object Utils {
+
+    const val USER_AGENT = "VLC/3.0.20 LibVLC/3.0.20"
+
+    fun getDateFormat(format: String): String {
+        return SimpleDateFormat(
+            format,
+            Locale.CHINA
+        ).format(Date(System.currentTimeMillis()))
+    }
+
+    fun dpToPx(dp: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp, Resources.getSystem().displayMetrics
+        ).toInt()
+    }
+
+    fun dpToPx(dp: Int): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), Resources.getSystem().displayMetrics
+        ).toInt()
+    }
+
+    fun pxToDp(px: Float): Int {
+        val scale = Resources.getSystem().displayMetrics.density
+        return (px / scale).toInt()
+    }
+
+    fun pxToDp(px: Int): Int {
+        val scale = Resources.getSystem().displayMetrics.density
+        return (px / scale).toInt()
+    }
+}

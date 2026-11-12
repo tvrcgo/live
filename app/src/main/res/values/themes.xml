@@ -5,7 +5,7 @@
          等安全；browse/imageCard 属性齐全），显式声明 Material 主题色
          token（colorPrimary 等 attr 由 material 库提供），Material
          组件经自身 materialThemeOverlay 机制正常工作 -->
-    <style name="Theme.MyTV" parent="@style/Theme.AppCompat.Leanback">
+    <style name="Theme.Live" parent="@style/Theme.AppCompat.Leanback">
         <item name="browsePaddingStart">11dp</item>
         <item name="browsePaddingEnd">11dp</item>
         <item name="browseRowsMarginTop">54dp</item>

@@ -10,7 +10,7 @@ plugins {
 def appVersion = DetectVersion(0)
 
 android {
-    namespace 'com.lizongying.mytv'
+    namespace 'com.chacha.live'
     compileSdk 34
 
     viewBinding {
