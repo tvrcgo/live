@@ -40,7 +40,9 @@ object LogoLoader {
                 ): Boolean {
                     failed.add(queue[index])
                     if (index + 1 < queue.size) {
-                        request(view, queue, index + 1, width, height)
+                        // Glide 禁止在回调内对同一 view 发起新请求（clear 防死锁断言），
+                        // post 到回调返回之后再加载备选
+                        view.post { request(view, queue, index + 1, width, height) }
                         return true
                     }
                     return false
