@@ -29,12 +29,13 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- 标题与滚动区分隔线：主题粉 60% 通栏，上下留白对称 -->
+        <!-- 标题与滚动区分隔线：主题色 60% 通栏，上下留白对称 -->
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginTop="12dp"
-            android:background="@color/focus_soft" />
+            android:alpha="0.6"
+            android:background="@color/focus" />
     </LinearLayout>
 
     <ScrollView

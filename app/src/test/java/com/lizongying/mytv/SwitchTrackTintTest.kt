@@ -5,6 +5,7 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -60,8 +61,21 @@ class SwitchTrackTintTest {
             track.state.contains(android.R.attr.state_checked)
         )
         assertEquals(
-            0x4DE42C68L,
+            expectedCheckedTrackColor(),
             sw.trackTintList!!.getColorForState(track.state, 0).toLong()
         )
+    }
+
+    // 轨道开态 = 主题色 + switch_track.xml 的 alpha 0.3，色号跟随 R.color.focus
+    private fun expectedCheckedTrackColor(): Long {
+        val accent = ContextCompat.getColor(
+            ApplicationProvider.getApplicationContext(),
+            R.color.focus
+        )
+        return ((TRACK_CHECKED_ALPHA shl 24) or (accent and 0x00FFFFFF)).toLong()
+    }
+
+    private companion object {
+        const val TRACK_CHECKED_ALPHA = 0x4D
     }
 }

@@ -1,7 +1,6 @@
 <resources>
+    <!-- 主题强调色：全站唯一的色值源，派生用法一律引用它（半透明用 alpha，见各布局） -->
     <color name="focus">#E42C68</color>
-    <!-- 分隔线柔和变体：主题粉 60% -->
-    <color name="focus_soft">#99E42C68</color>
     <color name="fastlane_background">#30000000</color>
     <color name="black">#000</color>
     <color name="white">#FFF</color>
@@ -12,6 +11,7 @@
     <color name="channel_text">#F6F8F8</color>
     <color name="channel_text_dim">#708083</color>
     <color name="channel_group_name">#C4CCCE</color>
+    <!-- channel_badge / channel_sel_sub 是强调色的浅色派生态（同色相、明度递减）：改 focus 时同步调 -->
     <color name="channel_badge">#FF9FB0</color>
     <color name="channel_number">#768285</color>
     <color name="channel_sel_sub">#FFD9DE</color>
