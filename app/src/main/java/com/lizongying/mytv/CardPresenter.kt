@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
-import com.bumptech.glide.Glide
+import com.lizongying.mytv.logo.LogoLoader
 import com.lizongying.mytv.models.ChannelItem
 
 class CardPresenter(
@@ -29,11 +29,9 @@ class CardPresenter(
         cardView.titleText = channelItem.getTV().title
         cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
 
-        cardView.mainImageView?.let {
-            Glide.with(viewHolder.view.context)
-                .load(channelItem.getTV().logo)
-                .centerInside()
-                .into(it)
+        cardView.mainImageView?.let { logoView ->
+            val tv = channelItem.getTV()
+            LogoLoader.load(logoView, listOf(tv.logo, tv.logoAlt, tv.sourceLogo))
         }
 
         cardView.setBackgroundColor(context.getColor(R.color.card_background))

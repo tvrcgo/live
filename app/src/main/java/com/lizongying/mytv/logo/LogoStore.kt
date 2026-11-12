@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit
 /**
  * 台标的 CDN 域名与地址。首次启动探测一次可用域名并缓存，之后只做字符串拼接。
  */
-class LogoStore(private val catalog: LogoCatalog, private val host: String) {
+class LogoStore(private val host: String) {
 
-    fun url(title: String): String? = catalog.fileFor(title)?.let { "https://$host/$PATH/$it.png" }
+    fun urls(title: String): List<String> = LogoName.candidates(title).map { "https://$host/$PATH/$it.png" }
 
     companion object {
         private const val TAG = "LogoStore"
@@ -33,8 +33,7 @@ class LogoStore(private val catalog: LogoCatalog, private val host: String) {
             .readTimeout(PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
 
-        fun load(context: Context): LogoStore =
-            LogoStore(LogoCatalog.load(context), SP.logoHost.ifEmpty { HOSTS.first() })
+        fun load(context: Context): LogoStore = LogoStore(SP.logoHost.ifEmpty { HOSTS.first() })
 
         suspend fun probe() = withContext(Dispatchers.IO) {
             if (SP.logoHost.isNotEmpty()) {

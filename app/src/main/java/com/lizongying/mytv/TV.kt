@@ -7,8 +7,11 @@ data class TV(
     var title: String,
     var videoUrl: List<String>,
     var channel: String = "",
-    // 最终要显示的台标地址：按频道名匹配到的 CDN 地址，否则回退源里的 tvg-logo，都没有为空
+    // 按频道名推导的首选台标地址；取不到依次退到 logoAlt、sourceLogo
     var logo: String = "",
+    var logoAlt: String = "",
+    // 源里 m3u 的 tvg-logo
+    var sourceLogo: String = "",
     var sourceName: String = "",
 
     ) : Serializable {

@@ -15,12 +15,15 @@ object ChannelListBuilder {
         for (source in sources) {
             for (channel in channels[source.id].orEmpty()) {
                 val group = channel.group.ifEmpty { M3uParser.FALLBACK_GROUP }
+                val logoUrls = logos.urls(channel.title)
                 grouped.getOrPut(group) { mutableListOf() }.add(
                     TV(
                         title = channel.title,
                         videoUrl = listOf(channel.url),
                         channel = group,
-                        logo = logos.url(channel.title) ?: channel.logo,
+                        logo = logoUrls.getOrNull(0).orEmpty(),
+                        logoAlt = logoUrls.getOrNull(1).orEmpty(),
+                        sourceLogo = channel.logo,
                         sourceName = if (showSourceName) source.name else "",
                     )
                 )
