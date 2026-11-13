@@ -25,12 +25,20 @@ class LogoNameTest {
     }
 
     @Test
-    fun keepOriginalName() {
-        assertEquals(listOf("CHC动作电影"), LogoName.candidates("CHC动作电影"))
-        assertEquals(listOf("CGTN英语"), LogoName.candidates("CGTN英语"))
+    fun alias() {
+        assertEquals(listOf("CGTN阿拉伯语", "CGTN阿语"), LogoName.candidates("CGTN阿拉伯语"))
+        assertEquals(listOf("CGTN纪录片", "CGTN纪录"), LogoName.candidates("CGTN纪录片"))
+        assertEquals(listOf("CGTN记录片", "CGTN记录"), LogoName.candidates("CGTN记录片"))
+        assertEquals(listOf("CGTN西语", "CGTN"), LogoName.candidates("CGTN西语"))
+    }
+
+    @Test
+    fun keepsOriginalNameThenFamily() {
+        assertEquals(listOf("CGTN法语", "CGTN"), LogoName.candidates("CGTN法语"))
+        assertEquals(listOf("CHC动作电影", "CHC"), LogoName.candidates("CHC动作电影"))
+        assertEquals(listOf("CGTN英语", "CGTN"), LogoName.candidates("CGTN英语"))
         assertEquals(listOf("睛彩广场舞"), LogoName.candidates("睛彩广场舞「移动」"))
         assertEquals(listOf("春晚1983"), LogoName.candidates("春晚1983"))
-        assertEquals(listOf("CGTN法语"), LogoName.candidates("CGTN法语"))
     }
 
     @Test

@@ -2,7 +2,7 @@ package com.chacha.live.logo
 
 /**
  * 由频道名推导台标文件名候选。不做存在性判断，命中与否交给请求结果。
- * 央视命名可确定，只给一个；其余按「规则名 → 原样 → 去尾部中文」排两个，供请求时依次兜底。
+ * 央视命名可确定，只给一个；其余按「原名 → 卫视规范名 → 同义词 → 去尾部中文」排两个依次兜底。
  */
 object LogoName {
 
@@ -20,9 +20,11 @@ object LogoName {
                 result.add(cctv)
                 continue
             }
-            // 原名优先：库里常带 4K 等变体，先按原名取，取不到再用归一化的卫视名
+            // 原名优先：库里常带 4K 等变体，先按原名取，取不到再用归一化名
             result.add(base)
             satelliteName(base)?.let { result.add(it) }
+            aliasName(base)?.let { result.add(it) }
+            stripCjkName(base)?.let { result.add(it) }
             if (base.contains('-') || base.contains('_')) {
                 result.add(base.replace("-", "").replace("_", ""))
             }
@@ -43,6 +45,23 @@ object LogoName {
         return SATELLITE_PREFIXES.firstOrNull { base.contains(it + SATELLITE) }?.plus(SATELLITE)
     }
 
+    private fun aliasName(base: String): String? {
+        for ((from, to) in ALIASES) {
+            if (base.contains(from)) {
+                val alias = base.replace(from, to)
+                if (alias != base) {
+                    return alias
+                }
+            }
+        }
+        return null
+    }
+
+    private fun stripCjkName(base: String): String? {
+        val head = base.trimEnd { it.isCjk() }
+        return head.takeIf { it.isNotEmpty() && it != base }
+    }
+
     private fun squash(text: String): String =
         text.replace("－", "-").replace("＋", "+").replace("\u3000", " ").filterNot { it.isWhitespace() }
 
@@ -50,7 +69,16 @@ object LogoName {
         QUALITY.fold(text) { acc, word -> acc.replace(word, "", ignoreCase = true) }
             .trim(' ', '-', '_', '·', '|')
 
+    private fun Char.isCjk(): Boolean = this in '\u4E00'..'\u9FFF'
+
     private const val SATELLITE = "卫视"
+
+    // 源里常见的长写法与库里的短写法不一致，长词在前避免被更短的规则切走
+    private val ALIASES = listOf(
+        "阿拉伯语" to "阿语",
+        "纪录片" to "纪录",
+        "记录片" to "记录",
+    )
 
     // 不能包含 4k/8k/3d，否则 CCTV-4K 会被削成错名
     private val QUALITY = listOf(
