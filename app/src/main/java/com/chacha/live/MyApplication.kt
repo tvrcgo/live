@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import com.chacha.live.logo.Logos
 import com.chacha.live.logo.LogoStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,7 @@ class MyApplication : Application() {
         super.onCreate()
 
         SP.init(this)
+        Logos.init(this)
         scope.launch { LogoStore.probe() }
 
         displayMetrics = DisplayMetrics()

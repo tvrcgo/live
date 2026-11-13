@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.chacha.live.TV
 import com.chacha.live.Utils
-import com.chacha.live.logo.LogoStore
+import com.chacha.live.logo.Logos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -47,7 +47,6 @@ class SourceRepository(private val context: Context) {
 
     private val gson = Gson()
     private val cacheFile = File(context.filesDir, CACHE_NAME)
-    private val logos = LogoStore.load(context)
     private val client = OkHttpClient.Builder()
         .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -59,7 +58,7 @@ class SourceRepository(private val context: Context) {
         if (sources.isEmpty()) {
             return null
         }
-        return ChannelListBuilder.build(sources, resolveChannels(sources, cached.sources), logos)
+        return ChannelListBuilder.build(sources, resolveChannels(sources, cached.sources))
     }
 
     suspend fun refresh(): RefreshResult = withContext(Dispatchers.IO) {
@@ -95,8 +94,10 @@ class SourceRepository(private val context: Context) {
         }
         entries.keys.retainAll(SourceStore.list().map { it.id }.toSet())
         writeCache(CacheFile(System.currentTimeMillis(), entries))
+        // 刷新源时给之前没取到台标的频道一次重试机会
+        Logos.clearFailures()
 
-        val rows = ChannelListBuilder.build(sources, resolveChannels(sources, entries), logos)
+        val rows = ChannelListBuilder.build(sources, resolveChannels(sources, entries))
         RefreshResult(rows, statuses)
     }
 

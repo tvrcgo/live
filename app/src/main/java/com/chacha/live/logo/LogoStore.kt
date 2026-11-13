@@ -1,6 +1,5 @@
 package com.chacha.live.logo
 
-import android.content.Context
 import android.util.Log
 import com.chacha.live.SP
 import com.chacha.live.Utils
@@ -15,7 +14,7 @@ import java.util.concurrent.TimeUnit
  */
 class LogoStore(private val host: String) {
 
-    fun urls(title: String): List<String> = LogoName.candidates(title).map { "https://$host/$PATH/$it.png" }
+    fun url(file: String): String = "https://$host/$PATH/$file.png"
 
     companion object {
         private const val TAG = "LogoStore"
@@ -33,7 +32,7 @@ class LogoStore(private val host: String) {
             .readTimeout(PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
 
-        fun load(context: Context): LogoStore = LogoStore(SP.logoHost.ifEmpty { HOSTS.first() })
+        fun defaultHost(): String = HOSTS.first()
 
         suspend fun probe() = withContext(Dispatchers.IO) {
             if (SP.logoHost.isNotEmpty()) {

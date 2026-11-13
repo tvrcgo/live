@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.chacha.live.databinding.FragmentVerticalChannelsBinding
 import com.chacha.live.databinding.ItemChannelBinding
 import com.chacha.live.databinding.ItemChannelGroupBinding
-import com.chacha.live.logo.LogoLoader
+import com.chacha.live.logo.Logos
 import com.chacha.live.models.ChannelGroup
 import com.chacha.live.models.ChannelSelection
 
@@ -304,9 +304,10 @@ class VerticalChannelFragment : Fragment() {
                 holder.itemView.context.getString(R.string.vertical_channel_number, tv.id + 1)
             holder.binding.name.text = tv.title
             val context = holder.itemView.context
-            LogoLoader.load(
+            Logos.load(
                 holder.binding.logo,
-                listOf(tv.logo, tv.logoAlt, tv.sourceLogo),
+                tv.title,
+                tv.sourceLogo,
                 context.resources.getDimensionPixelSize(R.dimen.channel_logo_width),
                 context.resources.getDimensionPixelSize(R.dimen.channel_logo_height),
             )

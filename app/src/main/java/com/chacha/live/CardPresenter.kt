@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
-import com.chacha.live.logo.LogoLoader
+import com.chacha.live.logo.Logos
 import com.chacha.live.models.ChannelItem
 
 class CardPresenter(
@@ -31,7 +31,7 @@ class CardPresenter(
 
         cardView.mainImageView?.let { logoView ->
             val tv = channelItem.getTV()
-            LogoLoader.load(logoView, listOf(tv.logo, tv.logoAlt, tv.sourceLogo))
+            Logos.load(logoView, tv.title, tv.sourceLogo)
         }
 
         cardView.setBackgroundColor(context.getColor(R.color.card_background))

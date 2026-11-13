@@ -1,28 +1,23 @@
 package com.chacha.live.source
 
 import com.chacha.live.TV
-import com.chacha.live.logo.LogoStore
 
 object ChannelListBuilder {
 
     fun build(
         sources: List<Source>,
         channels: Map<String, List<M3uChannel>>,
-        logos: LogoStore,
     ): Map<String, List<TV>> {
         val showSourceName = sources.size > 1
         val grouped = LinkedHashMap<String, MutableList<TV>>()
         for (source in sources) {
             for (channel in channels[source.id].orEmpty()) {
                 val group = channel.group.ifEmpty { M3uParser.FALLBACK_GROUP }
-                val logoUrls = logos.urls(channel.title)
                 grouped.getOrPut(group) { mutableListOf() }.add(
                     TV(
                         title = channel.title,
                         videoUrl = listOf(channel.url),
                         channel = group,
-                        logo = logoUrls.getOrNull(0).orEmpty(),
-                        logoAlt = logoUrls.getOrNull(1).orEmpty(),
                         sourceLogo = channel.logo,
                         sourceName = if (showSourceName) source.name else "",
                     )
