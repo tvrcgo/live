@@ -138,6 +138,7 @@ class PlayerFragment : Fragment() {
         playFailed = false
         showBlackScreen()
         hidePlayError()
+        clearStaleFrame()
         val player = playerView?.player
         if (player != null) {
             player.setMediaItem(MediaItem.fromUri(url))
@@ -288,6 +289,23 @@ class PlayerFragment : Fragment() {
 
     private fun showBlackScreen() {
         _binding?.blackScreen?.visibility = View.VISIBLE
+    }
+
+    /**
+     * 换台时清除 SurfaceView 上的上一台残影。
+     *
+     * 部分电视盒子把视频合成在 UI 层之上的独立硬件视频层，黑色覆盖层无法遮挡
+     * 旧帧。换台时用 [Player.clearVideoSurface] 解绑渲染目标：解绑后解码器停止
+     * 向 Surface 输出帧，多数固件此时会清除视频层内容；新流首帧渲染时重新绑定。
+     * 不触碰 SurfaceView 的可见性或视图树结构，避免厂商固件对 Surface 生命周期
+     * 的非标准实现导致黑屏。
+     */
+    @OptIn(UnstableApi::class)
+    private fun clearStaleFrame() {
+        val player = playerView?.player ?: return
+        val surface = playerView?.videoSurfaceView as? SurfaceView ?: return
+        player.clearVideoSurface()
+        player.setVideoSurfaceView(surface)
     }
 
     private fun hideBlackScreen() {
