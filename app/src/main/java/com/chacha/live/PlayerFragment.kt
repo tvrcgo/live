@@ -322,11 +322,11 @@ class PlayerFragment : Fragment() {
     companion object {
         private const val TAG = "PlayerFragment"
 
-        private const val MIN_BUFFER_MS = 4_000
-        private const val MAX_BUFFER_MS = 20_000
+        private const val MIN_BUFFER_MS = 15_000
+        private const val MAX_BUFFER_MS = 50_000
         private const val BUFFER_FOR_PLAYBACK_MS = 2_000
         private const val BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS = 4_000
-        private const val TARGET_BUFFER_BYTES = 32 * 1024 * 1024
+        private const val TARGET_BUFFER_BYTES = 64 * 1024 * 1024
 
         private const val CONNECT_TIMEOUT_MS = 8_000
         private const val READ_TIMEOUT_MS = 15_000
