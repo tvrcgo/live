@@ -6,6 +6,8 @@ import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -44,6 +46,7 @@ class PlayerFragment : Fragment() {
     private var retryUrl: String? = null
     private var playFailed = false
     private var lastNetworkRetryAt = 0L
+    private var surfaceRebuildPending = false
 
     private val retry = Runnable {
         channelItem?.let { play(it) }
@@ -138,6 +141,7 @@ class PlayerFragment : Fragment() {
         playFailed = false
         showBlackScreen()
         hidePlayError()
+        clearStaleFrame()
         val player = playerView?.player
         if (player != null) {
             player.setMediaItem(MediaItem.fromUri(url))
@@ -288,6 +292,41 @@ class PlayerFragment : Fragment() {
 
     private fun showBlackScreen() {
         _binding?.blackScreen?.visibility = View.VISIBLE
+    }
+
+    /**
+     * 换台时清除 SurfaceView 上的上一台残影。
+     *
+     * 部分电视盒子把视频合成在 UI 层之上的独立硬件视频层，黑色覆盖层无法遮挡旧帧。
+     * 唯一有效的清除方式是销毁视频 Surface。不能用可见性（INVISIBLE）：API 34+
+     * 上 Media3 将 SurfaceView 设为 SURFACE_LIFECYCLE_FOLLOWS_ATTACHMENT，Surface
+     * 生命周期不随可见性变化，INVISIBLE 后既不销毁也不重建，导致黑屏。因此把
+     * videoSurfaceView 从父容器移除再挂回，跨版本行为一致地触发
+     * surfaceDestroyed/surfaceCreated，残影随硬件视频层移除消失。
+     * 快速连续换台时守卫 [surfaceRebuildPending] 防止流程堆叠。
+     */
+    @OptIn(UnstableApi::class)
+    private fun clearStaleFrame() {
+        val surface = playerView?.videoSurfaceView as? SurfaceView ?: return
+        if (surfaceRebuildPending) {
+            return
+        }
+        surfaceRebuildPending = true
+        surface.holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceDestroyed(holder: SurfaceHolder) {
+                surface.holder.removeCallback(this)
+                handler.post {
+                    surfaceRebuildPending = false
+                    (surface.parent as? ViewGroup)?.let { parent ->
+                        parent.addView(surface, 0)
+                    }
+                }
+            }
+
+            override fun surfaceCreated(holder: SurfaceHolder) = Unit
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
+        })
+        (surface.parent as? ViewGroup)?.removeView(surface)
     }
 
     private fun hideBlackScreen() {
