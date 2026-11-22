@@ -6,9 +6,6 @@ import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Surface
-import android.view.SurfaceHolder
-import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -47,7 +44,6 @@ class PlayerFragment : Fragment() {
     private var retryUrl: String? = null
     private var playFailed = false
     private var lastNetworkRetryAt = 0L
-    private var surfaceRebuildPending = false
 
     private val retry = Runnable {
         channelItem?.let { play(it) }
@@ -142,7 +138,6 @@ class PlayerFragment : Fragment() {
         playFailed = false
         showBlackScreen()
         hidePlayError()
-        clearStaleFrame()
         val player = playerView?.player
         if (player != null) {
             player.setMediaItem(MediaItem.fromUri(url))
@@ -293,36 +288,6 @@ class PlayerFragment : Fragment() {
 
     private fun showBlackScreen() {
         _binding?.blackScreen?.visibility = View.VISIBLE
-    }
-
-    /**
-     * 换台时清除 SurfaceView 上的上一台残影。
-     *
-     * 部分电视盒子把视频合成在 UI 层之上的独立硬件视频层，黑色覆盖层无法遮挡旧帧。
-     * 唯一有效的清除方式是销毁视频 Surface：先 INVISIBLE 触发 surfaceDestroyed 移除
-     * 硬件视频层，再在回调中立刻置回 VISIBLE 重建 Surface，等待新流首帧。
-     * 快速连续换台时守卫 [surfaceRebuildPending] 防止销毁/重建流程堆叠。
-     */
-    @OptIn(UnstableApi::class)
-    private fun clearStaleFrame() {
-        val surface = playerView?.videoSurfaceView as? SurfaceView ?: return
-        if (surfaceRebuildPending) {
-            return
-        }
-        surfaceRebuildPending = true
-        surface.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceDestroyed(holder: SurfaceHolder) {
-                surface.holder.removeCallback(this)
-                handler.post {
-                    surfaceRebuildPending = false
-                    surface.visibility = View.VISIBLE
-                }
-            }
-
-            override fun surfaceCreated(holder: SurfaceHolder) = Unit
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
-        })
-        surface.visibility = View.INVISIBLE
     }
 
     private fun hideBlackScreen() {
