@@ -107,6 +107,7 @@ class PlayerFragment : Fragment() {
                         retryCount = 0
                         playFailed = false
                         hideBlackScreen()
+                        showVideoSurface()
                     }
 
                     override fun onPlayerError(error: PlaybackException) {
@@ -293,20 +294,23 @@ class PlayerFragment : Fragment() {
     }
 
     /**
-     * 换台时清除 SurfaceView 上的上一台残影。
+     * 换台时隐藏 SurfaceView 遮蔽上一台残影。
      *
      * 部分电视盒子把视频合成在 UI 层之上的独立硬件视频层，黑色覆盖层无法遮挡
-     * 旧帧。换台时用 [Player.clearVideoSurface] 解绑渲染目标：解绑后解码器停止
-     * 向 Surface 输出帧，多数固件此时会清除视频层内容；新流首帧渲染时重新绑定。
-     * 不触碰 SurfaceView 的可见性或视图树结构，避免厂商固件对 Surface 生命周期
-     * 的非标准实现导致黑屏。
+     * 旧帧（真机验证：clearVideoSurface 也不清已渲染帧）。实测 INVISIBLE 能
+     * 隐藏该视频层（v1 黑屏现象的反证），且隐藏期间解码器继续向 Surface 渲染
+     * 新帧，恢复可见时显示的是最新帧而非残影。因此换台时置 INVISIBLE，
+     * [onRenderedFirstFrame]（新台首帧已渲染）时恢复 VISIBLE。
+     * 只依赖 App 层回调，不触碰 Surface 生命周期与视图树；texture_view 回滚
+     * 时（非 SurfaceView）自动跳过。
      */
     @OptIn(UnstableApi::class)
     private fun clearStaleFrame() {
-        val player = playerView?.player ?: return
-        val surface = playerView?.videoSurfaceView as? SurfaceView ?: return
-        player.clearVideoSurface()
-        player.setVideoSurfaceView(surface)
+        (playerView?.videoSurfaceView as? SurfaceView)?.visibility = View.INVISIBLE
+    }
+
+    private fun showVideoSurface() {
+        playerView?.videoSurfaceView?.visibility = View.VISIBLE
     }
 
     private fun hideBlackScreen() {
