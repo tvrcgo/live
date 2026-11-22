@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Material 输入框：暗底 + 底部 2dp 下划线，聚焦变主题色 -->
+    <!-- Material 输入框：暗底 + 底部 2dp 下划线，聚焦用主题强调色 -->
     <item android:state_focused="true">
         <layer-list>
             <item>
@@ -12,7 +12,7 @@
             <item android:gravity="bottom">
                 <shape android:shape="rectangle">
                     <size android:height="2dp" />
-                    <solid android:color="@color/source_field_focus" />
+                    <solid android:color="@color/focus" />
                 </shape>
             </item>
         </layer-list>
