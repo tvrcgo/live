@@ -45,6 +45,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!--
+                TCL 灵控桌面 7.7+ 大图卡通道（逆向 MlAppsApiImpl.loadAppInfo 实证）：
+                桌面读取 launcher Activity 的 beidouui_icon meta-data，从本应用
+                assets 加载该文件名的图片，作为全幅大图卡（beidouIconBitmap）显示，
+                并缓存到桌面目录。无此声明时走云端图标查询，未收录的应用只显示小图标。
+            -->
+            <meta-data
+                android:name="beidouui_icon"
+                android:value="beidouui_icon.webp" />
         </activity>
 
         <receiver
