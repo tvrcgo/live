@@ -29,4 +29,12 @@ class ManifestTelevisionFeatureTest {
         assertNotNull("清单缺少 android.hardware.type.television，桌面会按手机应用渲染方形图标", television)
         assertEquals("必须是 required=true，否则不被视为 TV 应用", "true", television!!.getAttribute("android:required"))
     }
+
+    @Test
+    fun declaresLeanbackFeatureAsRequired() {
+        val leanback = featureNamed("android.software.leanback")
+
+        assertNotNull("清单缺少 android.software.leanback，部分桌面不给 16:9 大 banner", leanback)
+        assertEquals("必须是 required=true，对齐主流 TV 应用声明", "true", leanback!!.getAttribute("android:required"))
+    }
 }
